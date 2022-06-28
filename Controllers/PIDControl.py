@@ -25,4 +25,4 @@ class PIDController(Controller.Controller):
         
         c =  pterm + iterm + dterm + self.offset
         
-        return c
+        return int(c)

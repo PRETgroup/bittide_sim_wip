@@ -4,10 +4,10 @@
             "id" : "n0",
             "controller" : {
                 "type" : "PID",
-                "kp" : 0.2,
-                "ki" : 0.0,
-                "ki_window" : 50,
-                "kd" : 0.0,
+                "kp" : 0.1,
+                "ki" : 0.001,
+                "ki_window" : 20,
+                "kd" : 5,
                 "diff_step" : 1,
                 "midpoint" : 50,
                 "offset" : 0.0
@@ -22,10 +22,10 @@
             "id" : "n1",
             "controller" : {
                 "type" : "PID",
-                "kp" : 0.2,
-                "ki" : 0.0,
-                "ki_window" : 50,
-                "kd" : 0.0,
+                "kp" : 0.1,
+                "ki" : 0.001,
+                "ki_window" : 20,
+                "kd" : 5,
                 "diff_step" : 1,
                 "midpoint" : 50,
                 "offset" : 0.0

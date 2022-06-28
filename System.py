@@ -69,7 +69,6 @@ if __name__ == "__main__":
             timesteps.append(t)
             node_frequencies.append(step_frequencies)
             buffer_occupancies.append(step_occupancies)
-            
         nextStep = min(next_steps[min(next_steps,key=next_steps.get)], next_graph)
         if len(waiting_messages) > 0:
             nextMessage = min(waiting_messages, key=attrgetter('destTime'))
