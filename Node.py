@@ -30,6 +30,7 @@ class Node:
             occupancies.append(buffer.get_occupancy())
         
         self.freq += self.controller.step(occupancies)
+        if (self.freq <= 0): self.freq = 0.1
 
         return Output(1 / self.freq, out)
     

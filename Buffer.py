@@ -13,16 +13,16 @@ class Buffer:
         
         # print("Rcv msg", self.occ)
 
-        if self.occ > self.size:
-            print("OVERFLOW DETECTED")
+        # if self.occ > self.size:
+        #     print("OVERFLOW DETECTED")
     
     def send(self):
         self.occ -= 1
         
         # print("Send msg", self.occ)
 
-        if self.occ < 0:
-            print("UNDERFLOW DETECTED")
+        # if self.occ < 0:
+        #     print("UNDERFLOW DETECTED")
 
         return "1"
 
