@@ -4,6 +4,7 @@ from platform import node
 from ParseConfig import load_nodes_from_config
 from Node import Node
 import PySimpleGUI as sg
+import json
 
 class State(Enum):
     IDLE=1,
@@ -42,7 +43,7 @@ def main():
     next_id = 0
     
     sg.theme('Dark Blue 3')
-    col = [[sg.Multiline('', size=(40,25), disabled=True,key = "jsonout")], [sg.Input(default_text="./arch.json",size=(30,1)),sg.Button('Save')]]
+    col = [[sg.Multiline('', size=(40,25), disabled=True,key = "jsonout")], [sg.Input(default_text="./arch.json",size=(30,1), key="filenameval"),sg.Button('Save')]]
     layout = [[sg.Graph(
         canvas_size=(640, 480),
         graph_bottom_left=(0, 0),
@@ -59,6 +60,8 @@ def main():
     graph.bind('<Button-3>', '+RIGHT+')
     holding=(None,None) #key, val
     state = State.IDLE
+    json_element = window.find_element("jsonout")
+    update_json(node_circles, node_links, json_element)
     while (True):
         event, values = window.read()
         if event == sg.WIN_CLOSED:
@@ -109,12 +112,15 @@ def main():
             if (len(graph.get_figures_at_location((x,y))) > 0):
                 node = node_circles[graph.get_figures_at_location((x,y))[0]]
                 erase_node(graph, node_circles, node_links, node)
-        
-        
-        json_element = window.find_element("jsonout")
-        json_element.Update(disabled = False)
+            
         update_json(node_circles, node_links, json_element)
-        json_element.Update(disabled = True)
+        if event == "Save":
+            file_name = values["filenameval"]
+            file_contents = values["jsonout"]
+            f = open(file_name, "w")
+            f.write(file_contents)
+            f.close()
+
     window.close()
     
 def erase_node(graph, nodes, links, node):
@@ -131,8 +137,17 @@ def erase_node(graph, nodes, links, node):
     nodes.pop(node.figure_id)
 
 def update_json(nodes, links, element):
-    #element.Update("Hello, World")
-    pass
+    json_content = {
+        "nodes": [],
+        "links": []
+    }
+    for node in nodes:
+        pass
+    for link in links:
+        pass
+    element.Update(disabled = False)
+    element.Update(json.dumps(json_content, indent=2))
+    element.Update(disabled = True)
 
 if __name__ == "__main__":
     main()
