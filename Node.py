@@ -14,7 +14,7 @@ class Node:
 
         self.buffers = []
         for buffer in buffers:
-            self.buffers.append(Buffer(buffer.size, buffer.initialOcc))
+            self.buffers.append(Buffer(buffer.size, buffer.initialOcc)) #FIXME: make this mapped to label rather than index
     
     def buffer_receive(self, index, value):
         self.buffers[index].receive(value)
