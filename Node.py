@@ -22,20 +22,26 @@ class Node:
     def step(self):
         # print(self.name)
 
-        out = []
         occupancies = []
+        for buffer in self.buffers:
+            occupancies.append(buffer.get_occupancy())
+
+        self.freq += self.controller.step(occupancies)
+        if (self.freq <= 1): self.freq = 1 #cap negative frequencies to prevent negative time deltas
+        
+        out = []
         for buffer in self.buffers:
             val = buffer.send()
             out.append(val)
-            occupancies.append(buffer.get_occupancy())
         
-        self.freq += self.controller.step(occupancies)
-        if (self.freq <= 1): self.freq = 1 #cap negative frequencies to prevent negative time deltas
 
         return Output(1 / self.freq, out)
     
     def get_frequency(self):
         return self.freq
+    
+    def get_control_value(self):
+        return self.controller.get_control()
     
     def get_occupancies(self):
         occupancies = []

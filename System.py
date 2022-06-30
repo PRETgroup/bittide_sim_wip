@@ -38,6 +38,7 @@ if __name__ == "__main__":
     next_graph = 0.0
     timesteps = []
     node_frequencies = []
+    control_outputs = []
     buffer_occupancies = []
 
     bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%')
@@ -60,14 +61,17 @@ if __name__ == "__main__":
 
         if next_graph <= t:
             step_frequencies = []
+            step_outputs = []
             step_occupancies = []
             for node in nodes.values():
                 step_frequencies.append(node.get_frequency())
+                step_outputs.append(node.get_control_value())
                 step_occupancies.extend(node.get_occupancies_as_percent())
 
             next_graph += graph_step
             timesteps.append(t)
             node_frequencies.append(step_frequencies)
+            control_outputs.append(step_outputs)
             buffer_occupancies.append(step_occupancies)
         nextStep = min(next_steps[min(next_steps,key=next_steps.get)], next_graph)
         if len(waiting_messages) > 0:
@@ -80,13 +84,18 @@ if __name__ == "__main__":
     
 
     plt.figure()
-    plt.subplot(2, 1, 1)
+    plt.subplot(3, 1, 1)
     plt.title("Frequency")
     plt.ylabel("Hz")
     plt.plot(timesteps, node_frequencies, label=node_labels)
+
+    plt.subplot(3, 1, 2)
+    plt.title("Control Values")
+    plt.ylabel("Hz")
+    plt.plot(timesteps, control_outputs, label=node_labels)
         
     plt.legend(loc='best')
-    plt.subplot(2, 1, 2)
+    plt.subplot(3, 1, 3)
     plt.title("Buffer Occupancies")
     plt.ylabel("Percent")
     plt.plot(timesteps, buffer_occupancies, label=buffer_labels)
