@@ -3,32 +3,37 @@ import numpy as np
 from collections import deque
 
 class PIDController(Controller.Controller):
-    def __init__(self, name, kp, ki, i_win, kd, d_step, midpoint, offset):
+    def __init__(self, name, kp, ki, i_win, kd, d_step, offset):
         super().__init__(name)
         self.kp = kp
         self.ki = ki
         self.kd = kd
         self.integral_window = deque([0] * i_win, maxlen=i_win)
+        self.d_step = d_step
         self.diff_window = deque([0] * d_step, maxlen=d_step)
-        self.midpoint = int(midpoint)
         self.offset = offset
         self.last_c = 0
-        self.prev_occ = 0
-        
+        self.prev_occ = -1
+        self.first = True
     def step(self, occupancies):
         occ = np.mean(occupancies)
+        if(self.prev_occ == -1) : self.prev_occ = occ #first cycle initialisation
         ri = occ - self.prev_occ
         # if occ > self.midpoint:
         #     ri += 0.0001 * (occ - self.midpoint)
         # ri = np.mean([(occ - self.midpoint) for occ in occupancies]) #error term: average distance from midpoint
         self.integral_window.append(ri) #dt is always one
-        
+
         pterm = self.kp * ri
         iterm = self.ki * sum(self.integral_window)
-        dterm = self.kd * (ri - self.diff_window.popleft())
+        dterm = self.kd * ri - self.diff_window.popleft()/self.d_step
         self.diff_window.append(ri)
         c =  pterm + iterm + dterm + self.offset
-        
+        if(self.first):
+            print(c)
+            print(occ)
+            print(self.prev_occ)
+            self.first = False
         self.last_c = c
         self.prev_occ = occ
         return c

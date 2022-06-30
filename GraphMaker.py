@@ -270,7 +270,6 @@ def update_json(nodes, links, element):
                 "ki_window" : node_obj.ki_win,
                 "kd" : node_obj.kd,
                 "diff_step" : node_obj.kd_step,
-                "midpoint" : 50,
                 "offset" : node_obj.offset
             },
             "buffers" : [],
@@ -296,53 +295,69 @@ def update_json(nodes, links, element):
     for link in links:
         #need to be grouped by source
         #one link actually represents two physical links
-        both_directions = [list(link), list(link)[::-1]]
-        
-        for dirLink in both_directions:
-            #format link x->y
-            #since in our json format all links are grouped by source, we must check if an element already
-            #exists with this source (FIXME: change the json format so we don't have to do this)
-            src_exists = (False,-1)
-            dst_exists = (False,-1)
-            for it,source_links in enumerate(links_conf):
-                if source_links["source_id"] == nodes[dirLink[0]].label:
-                    src_exists = (True, it)
-                    break
-                
-            for it,source_links in enumerate(links_conf):
-                if source_links["source_id"] == nodes[dirLink[1]].label:
-                    dst_exists = (True, it)
-                    break
+
+        x,y = tuple(link)
+        #format link x->y
+        #since in our json format all links are grouped by source, we must check if an element already
+        #exists with this source (FIXME: change the json format so we don't have to do this)
+        x_exists = (False,-1)
+        y_exists = (False,-1)
+        for it,source_links in enumerate(links_conf):
+            if source_links["source_id"] == nodes[x].label:
+                x_exists = (True, it)
+                break
             
-            if (dst_exists[0]):
-                dstBuffer = len(links_conf[dst_exists[1]]["destinations"])-1
-            else:
-                dstBuffer = 0
-                
-            if (src_exists[0]):
-                srcConfig = links_conf[src_exists[1]]
-                srcConfig["destinations"].append (
-                    {
-                        "source_buffer_id" : len(srcConfig["destinations"]),
-                        "dest_node_id" : nodes[dirLink[1]].label,
-                        "dest_buffer_id" : dstBuffer,
-                        "delay" : links[link].delay
-                    }
-                )
-            else:
-                links_conf.append(
-                    {
-                        "source_id" : nodes[dirLink[0]].label,
-                        "destinations" : [
-                            {
-                                "source_buffer_id" : 0,
-                                "dest_node_id" : nodes[dirLink[1]].label,
-                                "dest_buffer_id" : dstBuffer,
-                                "delay" : links[link].delay
-                            }
-                        ]
-                    }
-                )
+        for it,source_links in enumerate(links_conf):
+            if source_links["source_id"] == nodes[y].label:
+                y_exists = (True, it)
+                break
+        
+        if x_exists[0]:
+            x_len = len(links_conf[x_exists[1]]["destinations"])
+        else:
+            x_len = 0
+            
+        if y_exists[0]:
+            y_len = len(links_conf[y_exists[1]]["destinations"])
+        else:
+            y_len = 0
+            
+        xy_link = {
+                    "source_buffer_id" : x_len,
+                    "dest_node_id" : nodes[y].label,
+                    "dest_buffer_id" : y_len,
+                    "delay" : links[link].delay
+                }
+        yx_link = {
+                    "source_buffer_id" : y_len,
+                    "dest_node_id" : nodes[x].label,
+                    "dest_buffer_id" : x_len,
+                    "delay" : links[link].delay
+                }
+        if (x_exists[0]):
+            srcConfig = links_conf[x_exists[1]]
+            srcConfig["destinations"].append (xy_link)
+        else:
+            links_conf.append(
+                {
+                    "source_id" : nodes[x].label,
+                    "destinations" : [
+                        xy_link
+                    ]
+                }
+            )
+        if (y_exists[0]):
+            srcConfig = links_conf[y_exists[1]]
+            srcConfig["destinations"].append (yx_link)
+        else:
+            links_conf.append(
+                {
+                    "source_id" : nodes[y].label,
+                    "destinations" : [
+                        yx_link
+                    ]
+                }
+            )
        
     element.Update(disabled = False)
     element.Update(json.dumps(json_content, indent=2))
