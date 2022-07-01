@@ -23,10 +23,12 @@ class Node:
         # print(self.name)
 
         occupancies = []
+        initial_occs = []
         for buffer in self.buffers:
             occupancies.append(buffer.get_occupancy())
+            initial_occs.append(buffer.get_initial_occupancy())
 
-        self.freq += self.controller.step(occupancies)
+        self.freq += self.controller.step((occupancies,initial_occs))
         if (self.freq <= 1): self.freq = 1 #cap negative frequencies to prevent negative time deltas
         
         out = []

@@ -6,6 +6,7 @@ class BufferSettings:
 class Buffer:
     def __init__(self, size, initialOcc):
         self.size = size
+        self.initialOcc = initialOcc
         self.occ = initialOcc
     
     def receive(self, value):
@@ -26,8 +27,11 @@ class Buffer:
 
         return "1"
 
+    def get_initial_occupancy(self):
+        return self.initialOcc
+    
     def get_occupancy(self):
         return self.occ
 
     def get_occupancy_as_percent(self):
-        return 100 * self.occ / self.size
+        return 100 * self.get_occupancy() / self.size
