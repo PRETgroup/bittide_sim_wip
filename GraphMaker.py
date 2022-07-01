@@ -9,7 +9,7 @@ class State(Enum):
     IDLE=1,
     DRAGGING=2,
     LINKING=3
-
+radius = 30
 
 class NodeCircle:
     def __init__(self, pos, label, radius, graph):  
@@ -68,11 +68,16 @@ class NodeLinks:
         
     
 def get_nodes_at_location(graph, pos, nodes):
-    existing_items = list(graph.get_figures_at_location(pos))
-    for item in existing_items:
-        if item not in nodes:
-            existing_items.remove(item)
-    return tuple(existing_items)
+    all_items = list(graph.get_figures_at_location(pos))
+    remaining_items = []
+    for item in all_items:
+        if item in nodes:
+            remaining_items.append(item)
+    #print("Nodes are: ")
+    #print([node for node in nodes])
+    #print("Found ids are: ")
+    #print(existing_items)
+    return tuple(remaining_items)
 
 def isfloat(num):
     try:
@@ -88,18 +93,28 @@ def main():
     next_id = 0
     
     sg.theme('Dark Blue 3')
-    col = [[sg.Multiline('', size=(40,25), disabled=True,key = "jsonout")], [sg.Input(default_text="./arch.json",size=(30,1), key="filenameval"),sg.Button('Save')]]
+    col = [[sg.Multiline('', size=(40,40), disabled=True,key = "jsonout")],
+    [sg.InputText(key='save_file', do_not_clear=False, enable_events=True, visible=False),
+    sg.FileSaveAs('Save as...', target='save_file',file_types=[('JSON', '.json')],
+    initial_folder=".", default_extension=".json"),
+    sg.InputText(key='load_file', do_not_clear=False, enable_events=True, visible=False),
+    sg.FileBrowse('Load...', target='load_file',file_types=[('JSON', '.json')],
+    initial_folder=".")
+    ]]
     layout = [[sg.Graph(
         canvas_size=(640, 480),
         graph_bottom_left=(0, 0),
         graph_top_right=(640, 480),
+        expand_x = True,
+        expand_y = True,
         key="-GRAPH-",
         background_color='lightblue',
         right_click_menu=[[],['Erase', 'Link', 'Edit', ['Freq', 'kp', 'ki', 'ki win', 'kd', 'kd step', 'offset']]],
         drag_submits=True,
-        enable_events=True), sg.Col(col,key="JSONOUT")]]
+        enable_events=True,
+        motion_events=True), sg.Col(col,key="JSONOUT")]]
 
-    window = sg.Window("Graph Maker", layout, finalize=True)
+    window = sg.Window("Graph Maker", layout, finalize=True, resizable=True, element_padding=2)
     # get the graph element for ease of use later
     graph = window["-GRAPH-"]  # type: sg.Graph
     graph.bind('<Button-3>', '+RIGHT+')
@@ -111,7 +126,14 @@ def main():
         event, values = window.read()
         if event == sg.WIN_CLOSED:
             break
-        if event == "-GRAPH-":  # if there's a "Graph" event, then it's a mouse action
+        elif event == "-GRAPH-+MOVE":
+            if (state == State.LINKING):
+                graph.delete_figure(linking_line)
+                linking_line = graph.draw_line(node_a.pos, values["-GRAPH-"])
+            else:
+                continue
+
+        elif event == "-GRAPH-":  # if there's a "Graph" event, then it's a mouse action
             x, y = values["-GRAPH-"] # get mouse position
             if (state == State.IDLE):
                 state = State.DRAGGING
@@ -119,7 +141,6 @@ def main():
                 if(len(existing_items) > 0): #check if we already have a node under our mouse
                     holding = (existing_items[0],node_circles[existing_items[0]])
                 else: #otherwise, create one
-                    radius = 30
                     label = "n" + str(next_id)
                     new_circle = NodeCircle((x,y),label,radius, graph)
                     node_circles[new_circle.figure_id] = new_circle
@@ -130,21 +151,12 @@ def main():
                 for link in node_links:
                     if holding[1].figure_id in link:
                         node_links[link].relocate(graph)
-                        
-            
-        if event == "-GRAPH-+UP":
-            state = State.IDLE
-            
-        if event == "Link":
-            x, y = values["-GRAPH-"]
-            nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
-            if (len(nodes_at_location) > 0):
-                if(state == State.IDLE):
-                    state = State.DRAGGING
-                    node_a = node_circles[nodes_at_location[0]]
-                elif (state == State.DRAGGING):
+            elif (state == State.LINKING):
+                nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
+                if (len(nodes_at_location) > 0):
                     state = State.IDLE
                     node_b = node_circles[nodes_at_location[0]]  
+                    graph.delete_figure(linking_line)
                     if (node_a != node_b):
                         if (frozenset([node_a.figure_id, node_b.figure_id]) in node_links):
                             node_links[frozenset([node_a.figure_id, node_b.figure_id])].delete_figure(graph)
@@ -152,94 +164,126 @@ def main():
                         else:
                             new_link = NodeLinks(node_a, node_b, graph)
                             node_links[frozenset([node_a.figure_id,node_b.figure_id])] = new_link
-        if event == "Erase":
+                        
+        elif event == "-GRAPH-+UP":
+            state = State.IDLE
+
+            
+        elif event == "Link":
+            x, y = values["-GRAPH-"]
+            nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
+            if (len(nodes_at_location) > 0):
+                if(state == State.IDLE):
+                    state = State.LINKING
+                    node_a = node_circles[nodes_at_location[0]]
+                    linking_line = graph.draw_line((x,y), (x,y))
+
+        elif event == "Erase":
             x, y = values["-GRAPH-"]
             nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
             if (len(nodes_at_location) > 0):
                 node = node_circles[nodes_at_location[0]]
                 erase_node(graph, node_circles, node_links, node)
         
-        #parameter editing FIXME code duplication
-        if event == "Freq":
-            x, y = values["-GRAPH-"]
-            nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
-            if (len(nodes_at_location) > 0):
-                node = node_circles[nodes_at_location[0]]
-                input_val = sg.popup_get_text("Frequency value:", default_text=node.frequency)
-                if (input_val != None and isfloat(input_val)):
-                    node.frequency = float(input_val)
-                node.update_text(graph)
-        
-        if event == "kp":
-            x, y = values["-GRAPH-"]
-            nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
-            if (len(nodes_at_location) > 0):
-                node = node_circles[nodes_at_location[0]]
-                input_val = sg.popup_get_text("kp value:", default_text=node.kp)
-                if (input_val != None and isfloat(input_val)):
-                    node.kp = float(input_val)
-                node.update_text(graph)
-                
-        if event == "ki":
-            x, y = values["-GRAPH-"]
-            nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
-            if (len(nodes_at_location) > 0):
-                node = node_circles[nodes_at_location[0]]
-                input_val = sg.popup_get_text("ki value:", default_text=node.ki)
-                if (input_val != None and isfloat(input_val)):
-                    node.ki = float(input_val)
-                node.update_text(graph)
-        
-        if event == "ki win":
-            x, y = values["-GRAPH-"]
-            nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
-            if (len(nodes_at_location) > 0):
-                node = node_circles[nodes_at_location[0]]
-                input_val = sg.popup_get_text("ki win value:", default_text=node.ki_win)
-                if (input_val != None and input_val.isnumeric()):
-                    node.ki_win = int(input_val)
-                node.update_text(graph)
-                
-        if event == "kd":
-            x, y = values["-GRAPH-"]
-            nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
-            if (len(nodes_at_location) > 0):
-                node = node_circles[nodes_at_location[0]]
-                input_val = sg.popup_get_text("kd value:", default_text=node.kd)
-                if (input_val != None and isfloat(input_val)):
-                    node.kd = float(input_val)
-                node.update_text(graph)
-        
-        if event == "kd step":
-            x, y = values["-GRAPH-"]
-            nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
-            if (len(nodes_at_location) > 0):
-                node = node_circles[nodes_at_location[0]]
-                input_val = sg.popup_get_text("kd step value:", default_text=node.kd_step)
-                if (input_val != None and input_val.isnumeric()):
-                    node.kd_step = int(input_val)
-                node.update_text(graph)
-            
-        if event == "offset":
-            x, y = values["-GRAPH-"]
-            nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
-            if (len(nodes_at_location) > 0):
-                node = node_circles[nodes_at_location[0]]
-                input_val = sg.popup_get_text("offset:", default_text=node.ofset)
-                if (input_val != None and isfloat(input_val)):
-                    node.offset = float(input_val)
-                node.update_text(graph)
-                
-        update_json(node_circles, node_links, json_element)
-        if event == "Save":
-            file_name = values["filenameval"]
+        #parameter editing        
+        elif event == "save_file":
+            file_name = values["save_file"]
+            if (file_name == ""): continue
             file_contents = values["jsonout"]
             f = open(file_name, "w")
             f.write(file_contents)
             f.close()
 
+        elif event == "load_file":
+            list_of_node_names = [node for node in node_circles]
+            for node in list_of_node_names:
+                erase_node(graph, node_circles,node_links,node_circles[node])
+            file_name = values["load_file"]
+            state = State.IDLE
+            holding = (None,None)
+            node_circles, node_links = load_from_file(graph, file_name)
+
+        handle_dropdown_events(event, values, graph, node_circles)
+        update_json(node_circles, node_links, json_element)
+
     window.close()
-    
+
+def load_from_file(graph, file_name):
+    node_temp_circles = {}
+    node_temp_links = {}
+    with open(file_name) as f:
+        json_dict = json.load(f)
+        all_nodes_json = json_dict["nodes"]
+        x,y = (0,0)
+        jump = 50
+        label_to_node = {}
+        for node_json in all_nodes_json:
+            if "meta_x" in node_json:
+                x = int(node_json["meta_x"])
+            else: x = x + radius
+            if "meta_y" in node_json:
+                y = int(node_json["meta_y"])
+            else: y = y + radius
+            label = node_json["id"]
+            new_circle = NodeCircle((x,y),label,radius, graph)
+            new_circle.frequency = float(node_json["frequency"])
+            control_json = node_json["controller"]
+            new_circle.kp = float(control_json["kp"])
+            new_circle.ki = float(control_json["ki"])
+            new_circle.ki_win = int(control_json["ki_window"])
+            new_circle.kd = float(control_json["kd"])
+            new_circle.kd_step = int(control_json["diff_step"])
+            new_circle.offset = float(control_json["offset"])
+            node_temp_circles[new_circle.figure_id] = new_circle
+            label_to_node[label] = new_circle
+            new_circle.update_text(graph)
+        all_links_json = json_dict["links"]
+        for link_json in all_links_json:
+            node_a = label_to_node[link_json["source_id"]]
+            dest_jsons = link_json["destinations"]
+            for destination in dest_jsons:
+                node_b = label_to_node[destination["dest_node_id"]]
+                if frozenset([node_a.figure_id,node_b.figure_id]) in node_temp_links:
+                    continue
+                new_link = NodeLinks(node_a, node_b, graph)
+                node_temp_links[frozenset([node_a.figure_id,node_b.figure_id])] = new_link
+    return (node_temp_circles, node_temp_links)
+
+def handle_dropdown_events(event, values, graph, node_circles):
+    x, y = values["-GRAPH-"]
+    nodes_at_location = get_nodes_at_location(graph, (x,y), node_circles)
+    if (len(nodes_at_location) > 0):
+        node = node_circles[nodes_at_location[0]]
+        if event == "Freq":
+            input_val = sg.popup_get_text("Frequency value:", default_text=node.frequency)
+            if (input_val != None and isfloat(input_val)):
+                node.frequency = float(input_val)
+        elif event == "kp":
+            input_val = sg.popup_get_text("kp value:", default_text=node.kp)
+            if (input_val != None and isfloat(input_val)):
+                node.kp = float(input_val)
+        elif event == "ki":
+            input_val = sg.popup_get_text("ki value:", default_text=node.ki)
+            if (input_val != None and isfloat(input_val)):
+                node.ki = float(input_val)
+        elif event == "ki win":
+            input_val = sg.popup_get_text("ki win value:", default_text=node.ki_win)
+            if (input_val != None and input_val.isnumeric()):
+                node.ki_win = int(input_val)
+        elif event == "kd":
+            input_val = sg.popup_get_text("kd value:", default_text=node.kd)
+            if (input_val != None and isfloat(input_val)):
+                node.kd = float(input_val)
+        elif event == "kd step":
+            input_val = sg.popup_get_text("kd step value:", default_text=node.kd_step)
+            if (input_val != None and input_val.isnumeric()):
+                node.kd_step = int(input_val)
+        elif event == "offset":
+            input_val = sg.popup_get_text("offset:", default_text=node.ofset)
+            if (input_val != None and isfloat(input_val)):
+                node.offset = float(input_val)
+        node.update_text(graph)
+
 def erase_node(graph, nodes, links, node):
     node.delete_figure(graph)
     
@@ -273,7 +317,9 @@ def update_json(nodes, links, element):
                 "offset" : node_obj.offset
             },
             "buffers" : [],
-            "frequency" : node_obj.frequency
+            "frequency" : node_obj.frequency,
+            "meta_x" : node_obj.pos[0],
+            "meta_y" : node_obj.pos[1]
         }
         #add the buffers
         for link in links:
@@ -293,13 +339,7 @@ def update_json(nodes, links, element):
     
     links_conf = json_content["links"]
     for link in links:
-        #need to be grouped by source
-        #one link actually represents two physical links
-
         x,y = tuple(link)
-        #format link x->y
-        #since in our json format all links are grouped by source, we must check if an element already
-        #exists with this source (FIXME: change the json format so we don't have to do this)
         x_exists = (False,-1)
         y_exists = (False,-1)
         for it,source_links in enumerate(links_conf):
@@ -358,7 +398,7 @@ def update_json(nodes, links, element):
                     ]
                 }
             )
-       
+
     element.Update(disabled = False)
     element.Update(json.dumps(json_content, indent=2))
     element.Update(disabled = True)
