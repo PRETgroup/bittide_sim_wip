@@ -24,7 +24,7 @@ class PIDController(Controller.Controller):
         
         if(self.prev_occ == -1) : self.prev_occ = occ #first cycle initialisation
         # ri = avg_err
-        ri = occupancies[0] - self.prev_occ
+        ri = occ - self.prev_occ
         # if occ > self.midpoint:
         #     ri += 0.0001 * (occ - self.midpoint)
         # ri = np.mean([(occ - self.midpoint) for occ in occupancies]) #error term: average distance from midpoint
