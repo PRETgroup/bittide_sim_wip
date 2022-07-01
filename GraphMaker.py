@@ -68,15 +68,14 @@ class NodeLinks:
         
     
 def get_nodes_at_location(graph, pos, nodes):
-    all_items = list(graph.get_figures_at_location(pos))
-    remaining_items = []
-    for item in all_items:
-        if item in nodes:
-            remaining_items.append(item)
-    #print("Nodes are: ")
-    #print([node for node in nodes])
-    #print("Found ids are: ")
-    #print(existing_items)
+    try:
+        all_items = list(graph.get_figures_at_location(pos))
+        remaining_items = []
+        for item in all_items:
+            if item in nodes:
+                remaining_items.append(item)
+    except:
+        pass
     return tuple(remaining_items)
 
 def isfloat(num):
