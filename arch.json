@@ -1,0 +1,68 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "controller": {
+        "type": "PID",
+        "kp": 5,
+        "ki": 0.03,
+        "ki_window": 0,
+        "kd": 0,
+        "diff_step": 1,
+        "offset": 0
+      },
+      "buffers": [
+        {
+          "dst_label": "n1",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 2000
+    },
+    {
+      "id": "n1",
+      "controller": {
+        "type": "PID",
+        "kp": 2,
+        "ki": 0.01,
+        "ki_window": 0,
+        "kd": 0,
+        "diff_step": 1,
+        "offset": 0
+      },
+      "buffers": [
+        {
+          "dst_label": "n0",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 1000.0
+    }
+  ],
+  "links": [
+    {
+      "source_id": "n0",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n1",
+          "dest_buffer_id": 0,
+          "delay": 0.00
+        }
+      ]
+    },
+    {
+      "source_id": "n1",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n0",
+          "dest_buffer_id": 0,
+          "delay": 0.00
+        }
+      ]
+    }
+  ]
+}
