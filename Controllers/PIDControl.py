@@ -14,20 +14,17 @@ class PIDController(Controller.Controller):
         self.d_step = d_step
         self.diff_window = deque([0] * d_step, maxlen=d_step)
         self.offset = offset
-        self.deadzone = 2
+        self.deadzone = 1
         self.last_c = 0
         self.prev_occ = -1
     def step(self, buffers_statuses):
-        occupancies, initial_occs = buffers_statuses
+        occupancies, initials = buffers_statuses
         occ = np.mean(occupancies)
-        avg_err = np.mean([one_occ - initial for one_occ, initial in zip(occupancies, initial_occs)])
-        
+        #avg_err = np.mean([one_occ - initial for one_occ, initial in zip(occupancies, initial_occs)])
         if(self.prev_occ == -1) : self.prev_occ = occ #first cycle initialisation
-        # ri = avg_err
         ri = occ - self.prev_occ
-        # if occ > self.midpoint:
-        #     ri += 0.0001 * (occ - self.midpoint)
-        # ri = np.mean([(occ - self.midpoint) for occ in occupancies]) #error term: average distance from midpoint
+        # ri = occ - np.mean(initials)
+
         self.integral_window.append(ri) #dt is always one
         self.integral += ri
 

@@ -30,16 +30,23 @@ if __name__ == "__main__":
 
     node_labels = []
     buffer_labels = []
+    link_map = {}
     for node in nodes.values():
         node_labels.append(node.name)
+        link_map[node.name] = {}
         for j in range(len(node.get_occupancies())):
+            link_map[node.name][j] = len(buffer_labels)
             buffer_labels.append(node.name + "->" + nodes[links[node.name][j].destNode].name)
+
+    
 
     next_graph = 0.0
     timesteps = []
     node_frequencies = []
     control_outputs = []
     buffer_occupancies = []
+    buffer_ugns = []
+    messages_inflight = []
 
     bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%')
     while t <= end_t:
@@ -63,16 +70,27 @@ if __name__ == "__main__":
             step_frequencies = []
             step_outputs = []
             step_occupancies = []
+            step_ugns = []
+            step_messages_inflight = []
             for node in nodes.values():
                 step_frequencies.append(node.get_frequency())
                 step_outputs.append(node.get_control_value())
-                step_occupancies.extend(node.get_occupancies_as_percent())
+                step_occupancies.extend(node.get_occupancies())
+                step_ugns.extend(node.get_ugns())
+                
+                for buffer in node.get_occupancies():
+                    step_messages_inflight.append(0)
+
+            for message in waiting_messages:
+                step_messages_inflight[link_map[message.destNode][message.destBuffer]] += 1
 
             next_graph += graph_step
             timesteps.append(t)
             node_frequencies.append(step_frequencies)
             control_outputs.append(step_outputs)
             buffer_occupancies.append(step_occupancies)
+            buffer_ugns.append(step_ugns)
+            messages_inflight.append(step_messages_inflight)
         nextStep = min(next_steps[min(next_steps,key=next_steps.get)], next_graph)
         if len(waiting_messages) > 0:
             nextMessage = min(waiting_messages, key=attrgetter('destTime'))
@@ -84,23 +102,27 @@ if __name__ == "__main__":
     
 
     plt.figure()
-    plt.subplot(3, 1, 1)
+    plt.subplot(4, 1, 1)
     plt.title("Frequency")
     plt.ylabel("Hz")
     plt.plot(timesteps, node_frequencies, label=node_labels)
 
-    plt.subplot(3, 1, 2)
+    plt.subplot(4, 1, 2)
     plt.title("Control Values")
     plt.ylabel("Hz")
     plt.plot(timesteps, control_outputs, label=node_labels)
         
     plt.legend(loc='best')
-    plt.subplot(3, 1, 3)
+    plt.subplot(4, 1, 3)
     plt.title("Buffer Occupancies")
-    plt.ylabel("Percent")
     plt.plot(timesteps, buffer_occupancies, label=buffer_labels)
         
-    plt.ylim(0,100)
+    plt.legend(loc='best')
+    plt.subplot(4, 1, 4)
+    plt.title("UGNs")
+    plt.plot(timesteps, buffer_ugns, label=buffer_labels)
+    # plt.plot(timesteps, messages_inflight, label=buffer_labels)
+        
     plt.legend(loc='best')
 
     plt.show()

@@ -4,9 +4,9 @@
       "id": "n0",
       "controller": {
         "type": "PID",
-        "kp": 5,
-        "ki": 0.03,
-        "ki_window": 0,
+        "kp": 1,
+        "ki": 0.000,
+        "ki_window":0,
         "kd": 0,
         "diff_step": 1,
         "offset": 0
@@ -14,18 +14,18 @@
       "buffers": [
         {
           "dst_label": "n1",
-          "capacity": 1000,
-          "initial_occ": 500
+          "capacity": 100,
+          "initial_occ": 50
         }
       ],
-      "frequency": 2000
+      "frequency": 1000
     },
     {
       "id": "n1",
       "controller": {
         "type": "PID",
-        "kp": 2,
-        "ki": 0.01,
+        "kp": 1,
+        "ki": 0.000,
         "ki_window": 0,
         "kd": 0,
         "diff_step": 1,
@@ -34,11 +34,11 @@
       "buffers": [
         {
           "dst_label": "n0",
-          "capacity": 1000,
-          "initial_occ": 500
+          "capacity": 100,
+          "initial_occ": 50
         }
       ],
-      "frequency": 1000.0
+      "frequency": 900
     }
   ],
   "links": [
@@ -49,7 +49,7 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 0,
-          "delay": 0.00
+          "delay": 0.1
         }
       ]
     },
@@ -60,7 +60,7 @@
           "source_buffer_id": 0,
           "dest_node_id": "n0",
           "dest_buffer_id": 0,
-          "delay": 0.00
+          "delay": 0.1
         }
       ]
     }

@@ -9,7 +9,7 @@ class Node:
     def __init__(self, name, controller, buffers, initialFreq):
         self.name = name
         self.controller = controller
-
+        self.theta = 0
         self.freq = initialFreq
 
         self.buffers = []
@@ -21,22 +21,26 @@ class Node:
     
     def step(self):
         # print(self.name)
-
+        
+        
         occupancies = []
         initial_occs = []
-        for buffer in self.buffers:
-            occupancies.append(buffer.get_occupancy())
+        for (index, buffer) in enumerate(self.buffers):
+            buffer.calculate_ugn(self.theta)
+            occupancies.append(buffer.get_occupancy(self.theta) + buffer.get_ugn())
+            #occupancies.append(buffer.get_occupancy())
             initial_occs.append(buffer.get_initial_occupancy())
 
-        self.freq += self.controller.step((occupancies,initial_occs))
+        self.freq += self.controller.step((occupancies, initial_occs))
         if (self.freq <= 1): self.freq = 1 #cap negative frequencies to prevent negative time deltas
         
         out = []
+        self.theta = self.theta + 1
         for buffer in self.buffers:
-            val = buffer.send()
+            val = buffer.send(self.theta)
             out.append(val)
+            
         
-
         return Output(1 / self.freq, out)
     
     def get_frequency(self):
@@ -48,7 +52,14 @@ class Node:
     def get_occupancies(self):
         occupancies = []
         for buffer in self.buffers:
-            occupancies.append(buffer.get_occupancy())
+            occupancies.append(buffer.get_occupancy(self.theta))
+        
+        return occupancies
+    
+    def get_ugns(self):
+        occupancies = []
+        for buffer in self.buffers:
+            occupancies.append(buffer.get_ugn())
         
         return occupancies
     
