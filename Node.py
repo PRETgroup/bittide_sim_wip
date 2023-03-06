@@ -7,16 +7,16 @@ class Output:
         self.messages = messages
 
 class Node:
-    def __init__(self, name, controller, buffers, initialFreq):
+    def __init__(self, name, controller, buffers, initialFreq, server):
         self.name = name
         self.controller = controller
-
+        self.server = server
         self.freq = initialFreq
         self.phase = 0
 
         self.buffers = []
         for buffer in buffers:
-            self.buffers.append(Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode)) #FIXME: make this mapped to label rather than index
+            self.buffers.append(Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode, server)) #FIXME: make this mapped to label rather than index
     
     def buffer_receive(self, index, value):
         self.buffers[index].receive(value)
@@ -34,15 +34,21 @@ class Node:
         self.freq += self.controller.step((occupancies,initial_occs))
         if (self.freq <= 1): self.freq = 1 #cap negative frequencies to prevent negative time deltas
         
-        out = []
-        inbound_frames = {}
+        all_outputs_to_line = []
+        all_inputs_to_fsm = []
+        #first during a tick, we provide the local (networked) machine with some inputs from the head of our buffer
         for buffer in self.buffers:
-            received_frame, sent_frame = buffer.send(self.phase, [])
-            out.append(sent_frame)
-            inbound_frames[buffer.remoteNode] = received_frame
-        
+            inboundBuff : BittideFrame = buffer.pop()
+            all_inputs_to_fsm.extend(inboundBuff.signals)
 
-        return Output(1 / self.freq, out)
+        #now we run the tick on the networked node:
+        outputs_from_fsm = self.server.run_node_tick(self.name, all_inputs_to_fsm)
+
+        for buffer in self.buffers:
+            sent_frame = buffer.getSendMessage(self.phase, outputs_from_fsm)
+            all_outputs_to_line.append(sent_frame)
+               
+        return Output(1 / self.freq, all_outputs_to_line)
     
     def get_frequency(self):
         return self.freq

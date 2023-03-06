@@ -1,4 +1,5 @@
 from operator import attrgetter
+from ControlServer import ControlServer
 import matplotlib.pyplot as plt
 from progress.bar import IncrementalBar
 import argparse
@@ -20,7 +21,8 @@ if __name__ == "__main__":
     graph_step = args.graph_step
     end_t = args.duration
     
-    nodes, links = load_nodes_from_config(args.conf)
+    serv = ControlServer(50000)
+    nodes, links = load_nodes_from_config(args.conf, serv)
 
     t = 0.0
     next_steps = {}
@@ -40,10 +42,11 @@ if __name__ == "__main__":
     node_frequencies = []
     control_outputs = []
     buffer_occupancies = []
+    serv.handle_fsm_connections(node_labels)
 
     bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%')
     while t <= end_t:
-        # print("Running timestep", t)
+        #print("Running timestep", t)
 
         for i, message in enumerate(waiting_messages):
             if message.destTime <= t:

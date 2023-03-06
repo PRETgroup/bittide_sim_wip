@@ -3,10 +3,11 @@ from collections import deque
 
 
 class Buffer:
-    def __init__(self, size, initialOcc, localNode, remoteNode):
+    def __init__(self, size, initialOcc, localNode, remoteNode, server):
         self.size = size
         self.dataq = deque(maxlen=size)
         self.initialOcc = initialOcc
+        self.server = server
         self.localNode = localNode
         self.remoteNode = remoteNode
         for i in range(initialOcc):
@@ -15,13 +16,15 @@ class Buffer:
     def receive(self, frame : BittideFrame):
         self.dataq.appendleft(frame)
     
-    def send(self, timestamp, signals : list = []) -> tuple[BittideFrame,BittideFrame]: #data popped, data sent
-        consumedFrame = self.dataq.pop()
-        newSendFrame = BittideFrame(sender_timestamp = timestamp, signals = list)
+    def pop(self) -> BittideFrame:
+        return self.dataq.pop()
+    
+    def getSendMessage(self, timestamp, output_signals) -> BittideFrame: #data sent to the simulated medium
+        newSendFrame = BittideFrame(sender_timestamp = timestamp, signals=output_signals)
         # if consumedFrame.sender_timestamp != -1:
         #     print("Received data sent from node " + self.remoteNode + " at " + str(consumedFrame.sender_timestamp) + " at local time " + str(timestamp))
         #     print("UGN " + self.localNode + "," +  self.remoteNode + " is " + str(timestamp - consumedFrame.sender_timestamp))
-        return (consumedFrame,newSendFrame)
+        return newSendFrame
 
     def get_initial_occupancy(self):
         return self.initialOcc

@@ -17,7 +17,7 @@ class LinkSettings:
     destBuffer : str
     delay : float
 
-def load_nodes_from_config(path):
+def load_nodes_from_config(path, serv):
 
     nodes = {}
     links = {}
@@ -39,7 +39,7 @@ def load_nodes_from_config(path):
                     
                 nodes[nj["id"]] = (Node(nj["id"],
                             PIDController(nj["id"], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), int(ctrl_opts["ki_window"]), float(ctrl_opts["kd"]), 
-                                          int(ctrl_opts["diff_step"]), float(ctrl_opts["offset"])), all_buffs, float(nj["frequency"])))
+                                          int(ctrl_opts["diff_step"]), float(ctrl_opts["offset"])), all_buffs, float(nj["frequency"]), server=serv))
             else:
                 print("Unknown control scheme " + str(ctrl_opts["type"]))
                 exit(0)
