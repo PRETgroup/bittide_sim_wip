@@ -1,4 +1,5 @@
 from Buffer import Buffer
+from BittideFrame import BittideFrame
 
 class Output:
     def __init__(self, nextStep, messages):
@@ -11,30 +12,34 @@ class Node:
         self.controller = controller
 
         self.freq = initialFreq
+        self.phase = 0
 
         self.buffers = []
         for buffer in buffers:
-            self.buffers.append(Buffer(buffer.size, buffer.initialOcc)) #FIXME: make this mapped to label rather than index
+            self.buffers.append(Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode)) #FIXME: make this mapped to label rather than index
     
     def buffer_receive(self, index, value):
         self.buffers[index].receive(value)
     
     def step(self):
         # print(self.name)
-
+        self.phase += 1
         occupancies = []
         initial_occs = []
         for buffer in self.buffers:
             occupancies.append(buffer.get_occupancy())
             initial_occs.append(buffer.get_initial_occupancy())
+        
 
         self.freq += self.controller.step((occupancies,initial_occs))
         if (self.freq <= 1): self.freq = 1 #cap negative frequencies to prevent negative time deltas
         
         out = []
+        inbound_frames = {}
         for buffer in self.buffers:
-            val = buffer.send()
-            out.append(val)
+            received_frame, sent_frame = buffer.send(self.phase, [])
+            out.append(sent_frame)
+            inbound_frames[buffer.remoteNode] = received_frame
         
 
         return Output(1 / self.freq, out)

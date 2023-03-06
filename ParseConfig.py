@@ -1,15 +1,21 @@
 import json
 
 from Controllers.PIDControl import PIDController
-from Buffer import BufferSettings
 from Node import Node
+from dataclasses import dataclass
 
+@dataclass
+class BufferSettings:
+    size : int
+    initialOcc : int
+    localNode : str
+    remoteNode : str
 
-class LinkSettings():
-    def __init__(self, destNode, destBuffer, delay):
-        self.destNode = destNode
-        self.destBuffer = destBuffer
-        self.delay = delay
+@dataclass
+class LinkSettings:
+    destNode : str
+    destBuffer : str
+    delay : float
 
 def load_nodes_from_config(path):
 
@@ -23,9 +29,13 @@ def load_nodes_from_config(path):
             ctrl_opts = nj["controller"]
             if str(ctrl_opts["type"]).upper() == "PID":
                 buffer_configs = nj["buffers"]
-                all_buffs = []
+                all_buffs = [] #remote buffer : buff
                 for buffer in buffer_configs:
-                    all_buffs.append(BufferSettings(int(buffer["capacity"]), int(buffer["initial_occ"])))
+                    all_buffs.append(
+                        BufferSettings(int(buffer["capacity"]),
+                                        int(buffer["initial_occ"]),
+                                        nj["id"],
+                                        buffer["dst_label"]))
                     
                 nodes[nj["id"]] = (Node(nj["id"],
                             PIDController(nj["id"], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), int(ctrl_opts["ki_window"]), float(ctrl_opts["kd"]), 
