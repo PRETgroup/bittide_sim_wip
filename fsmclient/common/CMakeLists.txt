@@ -1,0 +1,5 @@
+set(SOURCE main.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE})
+add_subdirectory(asio)
+include_directories(. common/)
+target_link_libraries(${CMAKE_PROJECT_NAME} asiolib chartlib)
