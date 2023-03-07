@@ -32,6 +32,30 @@ void removeSubstrs(std::string& s, std::string p) {
       s.erase(i, n);
 }
 
+std::vector<std::string> resolveSignalsFromString(std::string ss) {
+    removeSubstrs(ss,"[");
+    removeSubstrs(ss,"'");
+    removeSubstrs(ss,",");
+    removeSubstrs(ss,"]");
+    std::vector<std::string> all_tokens = splitString(ss,' ');
+    return all_tokens;
+}
+
+std::string formatOutputSignals(std::vector<std::string> sigs) {
+    std::string output = "[";
+
+    for (std::string sig : sigs) {
+        if(output != "[") {
+            output += ", ";
+        }
+        output += "'";
+        output += sig;
+        output += "'";
+    }
+
+    output += "]";
+    return output;
+}
 
 int main(int argc, char **argv)
 {
@@ -56,6 +80,7 @@ int main(int argc, char **argv)
 
     TickData current_state;
     reset(&current_state);
+    int tick_count = 0;
     while(true){ //run scchart
         //can't genericise interface variables unless we changed SCChart i/o to be map based
         //actually, we'll just hand-modify the code to reflect strings for now. can automate later
@@ -65,17 +90,13 @@ int main(int argc, char **argv)
         asio::read_until(s,b,"\n");
         //resolve the inbound signals
         std::istream is(&b);
-        std::string ss;
-        //is >> ss;
+        std::string inputSignalString;
+        is >> inputSignalString;
         //tokenize
-        removeSubstrs(ss,"[");
-        removeSubstrs(ss,"'");
-        removeSubstrs(ss,",");
-        removeSubstrs(ss,"]");
-        std::vector<std::string> all_tokens = splitString(ss,' ');
+        std::vector<std::string> all_tokens = resolveSignalsFromString(inputSignalString);
         
         for(auto& token : all_tokens) {
-            char* targetted_signal = fromChar(&current_state.iface, token[0]);
+            char* targetted_signal = inputsFromStr(&current_state.iface, token);
             if (targetted_signal == 0) {
                 std::cout << "Signal " << token << " not found" << std::endl;
             }
@@ -85,6 +106,11 @@ int main(int argc, char **argv)
         //run_tick
         tick(&current_state);
         //send back the resultant outputs
+        std::vector<std::string> all_outputs = getPresentOutputs(&current_state.iface);
+        std::string formatted_msg = formatOutputSignals(all_outputs) + "\n";
+        asio::write(s, asio::buffer(formatted_msg));
         //print trace
+        std::cout << "Tick " << tick_count << ", Inputs: " << inputSignalString << ", Outputs: " << formatted_msg << std::endl;
+        tick_count++;
     }
 }

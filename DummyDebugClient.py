@@ -25,9 +25,5 @@ while(True):
             nextchar= sock.recv(1).decode()
         print('received "%s"' % data)
 
-        if (first_name.decode() == "n0\n"):
-            message = ("['a']\n").encode()
-            first_name = b''
-        else:
-            message = (data + '\n').encode()
+        message = (input('message>') + '\n').encode()
         sock.send(message)

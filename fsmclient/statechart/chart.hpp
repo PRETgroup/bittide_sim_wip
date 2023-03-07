@@ -7,7 +7,8 @@
 
 #ifndef _ABRO_H_
 #define _ABRO_H_
-
+#include <iostream>
+#include <vector>
 // The chosen scheduling regime (IUR) uses four states to maintain the statuses of threads."),
 typedef enum {
   TERMINATED,
@@ -24,7 +25,8 @@ typedef struct {
   char O; // Output
 } Iface;
 
-char* fromChar(Iface* iface, char s);
+char* inputsFromStr(Iface* iface, std::string s);
+std::vector<std::string> getPresentOutputs(Iface* iface); //TODO: Implement
  
 // This enum contains all states of the  region
 typedef enum {

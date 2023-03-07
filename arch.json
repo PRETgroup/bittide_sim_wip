@@ -14,11 +14,11 @@
       "buffers": [
         {
           "dst_label": "n1",
-          "capacity": 1000,
-          "initial_occ": 500
+          "capacity": 100,
+          "initial_occ": 50
         }
       ],
-      "frequency": 2000
+      "frequency": 1000
     },
     {
       "id": "n1",
@@ -34,8 +34,8 @@
       "buffers": [
         {
           "dst_label": "n0",
-          "capacity": 1000,
-          "initial_occ": 500
+          "capacity": 100,
+          "initial_occ": 50
         }
       ],
       "frequency": 1000.0

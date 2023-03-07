@@ -7,12 +7,19 @@
 #include <stdio.h>
 #include "chart.hpp"
 
-char* fromChar(Iface* iface, char s) {
-  if (s == 'A') return &iface->A;
-  else if (s == 'B') return &iface->B;
-  else if (s == 'R') return &iface->R;
-  else if (s == 'O') return &iface->O;
+char* inputsFromStr(Iface* iface, std::string s) {
+  if (s == "A") return &iface->A;
+  else if (s == "B") return &iface->B;
+  else if (s == "R") return &iface->R;
+  else if (s == "O") return &iface->O;
   else return 0;
+}
+
+std::vector<std::string> getPresentOutputs(Iface* iface) {
+  std::vector<std::string> activeOutputs;
+  if (iface->O)
+    activeOutputs.push_back("O");
+  return activeOutputs;
 }
 static inline void ABRO_regionR0_state__EA_Init(ABRO_regionR0Context *context) {
   context->iface->O = 0;
