@@ -16,7 +16,7 @@ while(True):
     first_name = message
     print('sending "%s"' % message)
     sock.send(message)
-
+    tick_count = 0
     while (True):
         data = ""
         nextchar = sock.recv(1).decode()
@@ -25,5 +25,7 @@ while(True):
             nextchar= sock.recv(1).decode()
         print('received "%s"' % data)
 
-        message = (input('message>') + '\n').encode()
+        message = (input('Tick ' + str(tick_count) + '>') + '\n').encode()
+        print('Sending message: "%s"' % message)
+        tick_count += 1
         sock.send(message)

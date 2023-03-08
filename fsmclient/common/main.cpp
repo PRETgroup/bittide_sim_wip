@@ -35,9 +35,9 @@ void removeSubstrs(std::string& s, std::string p) {
 std::vector<std::string> resolveSignalsFromString(std::string ss) {
     removeSubstrs(ss,"[");
     removeSubstrs(ss,"'");
-    removeSubstrs(ss,",");
+    removeSubstrs(ss," ");
     removeSubstrs(ss,"]");
-    std::vector<std::string> all_tokens = splitString(ss,' ');
+    std::vector<std::string> all_tokens = splitString(ss,',');
     return all_tokens;
 }
 
@@ -91,6 +91,7 @@ int main(int argc, char **argv)
         //resolve the inbound signals
         std::istream is(&b);
         std::string inputSignalString;
+        std::getline(is, inputSignalString);
         is >> inputSignalString;
         //tokenize
         std::vector<std::string> all_tokens = resolveSignalsFromString(inputSignalString);
