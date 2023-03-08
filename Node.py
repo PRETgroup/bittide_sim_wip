@@ -42,7 +42,10 @@ class Node:
             all_inputs_to_fsm.extend(inboundBuff.signals)
 
         #now we run the tick on the networked node:
-        outputs_from_fsm = self.server.run_node_tick(self.name, all_inputs_to_fsm)
+        if (self. server is not None):
+            outputs_from_fsm = self.server.run_node_tick(self.name, all_inputs_to_fsm)
+        else:
+            outputs_from_fsm = []
 
         for buffer in self.buffers:
             sent_frame = buffer.getSendMessage(self.phase, outputs_from_fsm)

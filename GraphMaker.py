@@ -20,7 +20,7 @@ class NodeCircle:
         self.radius = radius
         self.kp = 0
         self.ki = 0
-        self.ki_win = 20
+        self.ki_win = 0
         self.kd = 0
         self.kd_step = 1
         self.offset = 0

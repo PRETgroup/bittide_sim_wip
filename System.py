@@ -17,11 +17,15 @@ if __name__ == "__main__":
     parser.add_argument('--conf', help='config file path', required=True)
     parser.add_argument('--graph_step', dest="graph_step", help='Graphing intervals', default=0.001, type=float)
     parser.add_argument('--duration', dest="duration", help='Simulation duration in sim time', default=1, type=float)
+    parser.add_argument('--disable_app', action='store_true', help='Simulate the control system without an attached app')
     args = parser.parse_args()
     graph_step = args.graph_step
     end_t = args.duration
     
-    serv = ControlServer(50000)
+    if not args.disable_app:
+        serv = ControlServer(50000)
+    else:
+        serv = None
     nodes, links = load_nodes_from_config(args.conf, serv)
 
     t = 0.0
@@ -42,7 +46,8 @@ if __name__ == "__main__":
     node_frequencies = []
     control_outputs = []
     buffer_occupancies = []
-    serv.handle_fsm_connections(node_labels)
+    if serv is not None:
+        serv.handle_fsm_connections(node_labels)
 
     bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%')
     while t <= end_t:
