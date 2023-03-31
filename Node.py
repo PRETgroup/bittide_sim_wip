@@ -13,12 +13,15 @@ class Node:
         self.server = server
         self.freq = initialFreq
         self.phase = 0
-
+        self.live = False
         self.buffers = []
+        self.current_delays = {}
         for buffer in buffers:
             self.buffers.append(Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode, server)) #FIXME: make this mapped to label rather than index
+            self.current_delays[(name, buffer.remoteNode)] = 0
     
     def buffer_receive(self, index, value):
+        self.live = True
         self.buffers[index].receive(value)
     
     def step(self):
@@ -31,7 +34,7 @@ class Node:
             initial_occs.append(buffer.get_initial_occupancy())
         
 
-        self.freq += self.controller.step((occupancies,initial_occs))
+        self.freq += self.controller.step((occupancies,initial_occs), self.live)
         if (self.freq <= 1): self.freq = 1 #cap negative frequencies to prevent negative time deltas
         
         all_outputs_to_line = []
@@ -39,6 +42,9 @@ class Node:
         #first during a tick, we provide the local (networked) machine with some inputs from the head of our buffer
         for buffer in self.buffers:
             inboundBuff : BittideFrame = buffer.pop()
+            if inboundBuff.sender_timestamp != -1:
+                self.current_delays[buffer.getId()] = self.phase - inboundBuff.sender_timestamp;
+            else: self.current_delays[buffer.getId()] = 0
             all_inputs_to_fsm.extend(inboundBuff.signals)
 
         #now we run the tick on the networked node:
@@ -58,6 +64,12 @@ class Node:
     
     def get_control_value(self):
         return self.controller.get_control()
+    
+    def get_logical_delays(self):
+        delays = []
+        for buffer in self.buffers:
+            delays.append(self.current_delays[buffer.getId()])
+        return delays
     
     def get_occupancies(self):
         occupancies = []

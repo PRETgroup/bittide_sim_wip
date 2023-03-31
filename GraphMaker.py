@@ -51,22 +51,43 @@ class NodeCircle:
         graph.delete_figure(self.cfg_text_id)
 
 class NodeLinks:
-    def __init__(self, node_a, node_b, graph):  
+    def __init__(self, node_a, node_b, graph, delay):  
         self.node_a = node_a
         self.node_b = node_b
+        self.delay = delay
         self.fig_id = graph.draw_line((node_a.pos[0], node_a.pos[1]), (node_b.pos[0], node_b.pos[1]))
-        self.delay = 0
+        self.cfg_text_id = graph.draw_text("delay: ", (0,0))
+        self.update_text(graph)
         self.capacity_per_node = 100
         self.initial_occ_per_node = 50
         
     def relocate(self, graph):
         graph.delete_figure(self.fig_id)
         self.fig_id = graph.draw_line((self.node_a.pos[0], self.node_a.pos[1]), (self.node_b.pos[0], self.node_b.pos[1]))
+        self.update_text(graph)
+
+    def update_text(self, graph):
+        graph.delete_figure(self.cfg_text_id)
+        vals_text = "delay:%f\n" % (self.delay)
+        self.text_pos = ((self.node_a.pos[0] + self.node_b.pos[0]) / 2,(self.node_a.pos[1] + self.node_b.pos[1]) / 2)
+        self.cfg_text_id = graph.draw_text(vals_text, self.text_pos)
     
     def delete_figure(self, graph):
         graph.delete_figure(self.fig_id)
+        graph.delete_figure(self.cfg_text_id)
         
-    
+
+def find_free_id(nodes, next_id):
+    match_found = True
+    while (match_found):
+        match_found = False
+        for node in nodes:
+            if nodes[node].label == "n"+str(next_id):
+                match_found = True
+                next_id += 1
+                break
+    return next_id
+
 def get_nodes_at_location(graph, pos, nodes):
     try:
         all_items = list(graph.get_figures_at_location(pos))
@@ -144,7 +165,7 @@ def main():
                     new_circle = NodeCircle((x,y),label,radius, graph)
                     node_circles[new_circle.figure_id] = new_circle
                     holding = (new_circle.figure_id,node_circles[new_circle.figure_id])
-                    next_id += 1
+                    next_id = find_free_id(node_circles , next_id)
             elif (state == State.DRAGGING):
                 holding[1].relocate(graph, (x,y))
                 for link in node_links:
@@ -155,14 +176,16 @@ def main():
                 if (len(nodes_at_location) > 0):
                     state = State.IDLE
                     node_b = node_circles[nodes_at_location[0]]  
-                    graph.delete_figure(linking_line)
+                    
                     if (node_a != node_b):
                         if (frozenset([node_a.figure_id, node_b.figure_id]) in node_links):
                             node_links[frozenset([node_a.figure_id, node_b.figure_id])].delete_figure(graph)
                             node_links.pop(frozenset([node_a.figure_id,node_b.figure_id]))
                         else:
-                            new_link = NodeLinks(node_a, node_b, graph)
+                            input_val = float(sg.popup_get_text("link delay:", default_text=0))
+                            new_link = NodeLinks(node_a, node_b, graph, input_val)
                             node_links[frozenset([node_a.figure_id,node_b.figure_id])] = new_link
+                graph.delete_figure(linking_line)
                         
         elif event == "-GRAPH-+UP":
             state = State.IDLE
@@ -197,10 +220,12 @@ def main():
             list_of_node_names = [node for node in node_circles]
             for node in list_of_node_names:
                 erase_node(graph, node_circles,node_links,node_circles[node])
+                
             file_name = values["load_file"]
             state = State.IDLE
             holding = (None,None)
             node_circles, node_links = load_from_file(graph, file_name)
+            next_id = find_free_id(node_circles, next_id)
 
         handle_dropdown_events(event, values, graph, node_circles)
         update_json(node_circles, node_links, json_element)
@@ -242,9 +267,10 @@ def load_from_file(graph, file_name):
             dest_jsons = link_json["destinations"]
             for destination in dest_jsons:
                 node_b = label_to_node[destination["dest_node_id"]]
+                delay = destination["delay"]
                 if frozenset([node_a.figure_id,node_b.figure_id]) in node_temp_links:
                     continue
-                new_link = NodeLinks(node_a, node_b, graph)
+                new_link = NodeLinks(node_a, node_b, graph,delay)
                 node_temp_links[frozenset([node_a.figure_id,node_b.figure_id])] = new_link
     return (node_temp_circles, node_temp_links)
 
@@ -278,7 +304,7 @@ def handle_dropdown_events(event, values, graph, node_circles):
             if (input_val != None and input_val.isnumeric()):
                 node.kd_step = int(input_val)
         elif event == "offset":
-            input_val = sg.popup_get_text("offset:", default_text=node.ofset)
+            input_val = sg.popup_get_text("offset:", default_text=node.offset)
             if (input_val != None and isfloat(input_val)):
                 node.offset = float(input_val)
         node.update_text(graph)

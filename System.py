@@ -34,6 +34,7 @@ if __name__ == "__main__":
         next_steps[node] = 0.0
     waiting_messages = []
 
+ #### graphing history ####
     node_labels = []
     buffer_labels = []
     for node in nodes.values():
@@ -46,6 +47,9 @@ if __name__ == "__main__":
     node_frequencies = []
     control_outputs = []
     buffer_occupancies = []
+    logical_delay = []
+##############################
+
     if serv is not None:
         serv.handle_fsm_connections(node_labels)
 
@@ -71,16 +75,19 @@ if __name__ == "__main__":
             step_frequencies = []
             step_outputs = []
             step_occupancies = []
+            step_delays = []
             for node in nodes.values():
                 step_frequencies.append(node.get_frequency())
                 step_outputs.append(node.get_control_value())
                 step_occupancies.extend(node.get_occupancies_as_percent())
+                step_delays.extend(node.get_logical_delays())
 
             next_graph += graph_step
             timesteps.append(t)
             node_frequencies.append(step_frequencies)
             control_outputs.append(step_outputs)
             buffer_occupancies.append(step_occupancies)
+            logical_delay.append(step_delays)
         nextStep = min(next_steps[min(next_steps,key=next_steps.get)], next_graph)
         if len(waiting_messages) > 0:
             nextMessage = min(waiting_messages, key=attrgetter('destTime'))
@@ -97,16 +104,22 @@ if __name__ == "__main__":
     plt.ylabel("Hz")
     plt.plot(timesteps, node_frequencies, label=node_labels)
 
-    plt.subplot(3, 1, 2)
-    plt.title("Control Values")
-    plt.ylabel("Hz")
-    plt.plot(timesteps, control_outputs, label=node_labels)
+    # plt.subplot(4, 1, 2)
+    # plt.title("Control Values")
+    # plt.ylabel("Hz")
+    # plt.plot(timesteps, control_outputs, label=node_labels)
         
     plt.legend(loc='best')
-    plt.subplot(3, 1, 3)
+    plt.subplot(3, 1, 2)
     plt.title("Buffer Occupancies")
     plt.ylabel("Percent")
     plt.plot(timesteps, buffer_occupancies, label=buffer_labels)
+
+    plt.legend(loc='best')
+    plt.subplot(3, 1, 3)
+    plt.title("Logical Delays")
+    plt.ylabel("Ticks")
+    plt.plot(timesteps, logical_delay, label=buffer_labels)
         
     plt.ylim(0,100)
     plt.legend(loc='best')

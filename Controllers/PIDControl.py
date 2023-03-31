@@ -17,28 +17,24 @@ class PIDController(Controller.Controller):
         self.deadzone = 2
         self.last_c = 0
         self.prev_occ = -1
-    def step(self, buffers_statuses):
+    def step(self, buffers_statuses, live : bool):
         occupancies, initial_occs = buffers_statuses
         occ = np.mean(occupancies)
-        avg_err = np.mean([one_occ - initial for one_occ, initial in zip(occupancies, initial_occs)])
-        
-        if(self.prev_occ == -1) : self.prev_occ = occ #first cycle initialisation
-        # ri = avg_err
-        ri = occ - self.prev_occ
-        # if occ > self.midpoint:
-        #     ri += 0.0001 * (occ - self.midpoint)
-        # ri = np.mean([(occ - self.midpoint) for occ in occupancies]) #error term: average distance from midpoint
-        self.integral_window.append(ri) #dt is always one
-        self.integral += ri
+        if live:
+            if (self.prev_occ == -1) : self.prev_occ = occ #first cycle initialisation
+            ri = occ - self.prev_occ
+            self.integral_window.append(ri) #dt is always one
+            self.integral += ri
 
-        pterm = self.kp * ri
-        if (len(self.integral_window) > 0):
-            iterm = self.ki * sum(self.integral_window)
-        else:
-            iterm = self.ki * self.integral
-        dterm = self.kd * (ri - self.diff_window.popleft())/self.d_step
-        self.diff_window.append(ri)
-        c =  pterm + iterm + dterm + self.offset
+            pterm = self.kp * ri
+            if (len(self.integral_window) > 0):
+                iterm = self.ki * sum(self.integral_window)
+            else:
+                iterm = self.ki * self.integral
+            dterm = self.kd * (ri - self.diff_window.popleft())/self.d_step
+            self.diff_window.append(ri)
+            c =  pterm + iterm + dterm + self.offset
+        else: c = 0
         self.last_c = c
         self.prev_occ = occ
         return c

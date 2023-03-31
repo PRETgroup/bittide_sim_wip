@@ -12,6 +12,9 @@ class Buffer:
         self.remoteNode = remoteNode
         for i in range(initialOcc):
             self.dataq.appendleft(BittideFrame(sender_timestamp=-1, signals=[]))
+
+    def getId(self):
+        return (self.localNode, self.remoteNode)
     
     def receive(self, frame : BittideFrame):
         self.dataq.appendleft(frame)
