@@ -1,8 +1,8 @@
 from operator import attrgetter
 from ControlServer import ControlServer
-import matplotlib.pyplot as plt
 from progress.bar import IncrementalBar
 import argparse
+from Plotter import Plotter
 from ParseConfig import load_nodes_from_config
 
 class WaitingMessage():
@@ -31,32 +31,18 @@ if __name__ == "__main__":
     t = 0.0
     next_steps = {}
     for node in nodes:
-        next_steps[node] = 0.0
+        next_steps[node] = 1 / nodes[node].freq
     waiting_messages = []
 
- #### graphing history ####
-    node_labels = []
-    buffer_labels = []
-    for node in nodes.values():
-        node_labels.append(node.name)
-        for j in range(len(node.get_occupancies())):
-            buffer_labels.append(node.name + "->" + nodes[links[node.name][j].destNode].name)
-
+    plotter = Plotter(nodes, links)
     next_graph = 0.0
-    timesteps = []
-    node_frequencies = []
-    control_outputs = []
-    buffer_occupancies = []
-    logical_delay = []
-##############################
 
     if serv is not None:
-        serv.handle_fsm_connections(node_labels)
+        serv.handle_fsm_connections(plotter.node_labels)
 
+    # main body
     bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%')
     while t <= end_t:
-        #print("Running timestep", t)
-
         for i, message in enumerate(waiting_messages):
             if message.destTime <= t:
                 nodes[message.destNode].buffer_receive(message.destBuffer, message.value)
@@ -66,28 +52,15 @@ if __name__ == "__main__":
             if next_steps[node.name] <= t:
                 out = node.step()
                 next_steps[node.name] += out.nextStep
-
                 for j, value in enumerate(out.messages):
                     link = links[node.name][j]
                     waiting_messages.append(WaitingMessage(link.destNode, link.destBuffer, t + link.delay, value))
 
+        # graph at a lower resolution than the simulation # 
         if next_graph <= t:
-            step_frequencies = []
-            step_outputs = []
-            step_occupancies = []
-            step_delays = []
-            for node in nodes.values():
-                step_frequencies.append(node.get_frequency())
-                step_outputs.append(node.get_control_value())
-                step_occupancies.extend(node.get_occupancies_as_percent())
-                step_delays.extend(node.get_logical_delays())
-
+            plotter.plot(t)
             next_graph += graph_step
-            timesteps.append(t)
-            node_frequencies.append(step_frequencies)
-            control_outputs.append(step_outputs)
-            buffer_occupancies.append(step_occupancies)
-            logical_delay.append(step_delays)
+
         nextStep = min(next_steps[min(next_steps,key=next_steps.get)], next_graph)
         if len(waiting_messages) > 0:
             nextMessage = min(waiting_messages, key=attrgetter('destTime'))
@@ -97,32 +70,7 @@ if __name__ == "__main__":
         bar.goto((int)(t/end_t * 100.0))
     bar.finish()
     
+    # graphing 
+    plotter.render()
 
-    plt.figure()
-    plt.subplot(3, 1, 1)
-    plt.title("Frequency")
-    plt.ylabel("Hz")
-    plt.plot(timesteps, node_frequencies, label=node_labels)
-
-    # plt.subplot(4, 1, 2)
-    # plt.title("Control Values")
-    # plt.ylabel("Hz")
-    # plt.plot(timesteps, control_outputs, label=node_labels)
-        
-    plt.legend(loc='best')
-    plt.subplot(3, 1, 2)
-    plt.title("Buffer Occupancies")
-    plt.ylabel("Percent")
-    plt.plot(timesteps, buffer_occupancies, label=buffer_labels)
-
-    plt.legend(loc='best')
-    plt.subplot(3, 1, 3)
-    plt.title("Logical Delays")
-    plt.ylabel("Ticks")
-    plt.plot(timesteps, logical_delay, label=buffer_labels)
-        
-    plt.ylim(0,100)
-    plt.legend(loc='best')
-
-    plt.show()
     

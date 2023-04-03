@@ -26,23 +26,24 @@ def load_nodes_from_config(path, serv):
         config_json = json.load(conf)
         nodes_json = config_json["nodes"]
         for nj in nodes_json:
+            buffer_configs = nj["buffers"]
+            all_buffs = [] #remote buffer : buff
+            for buffer in buffer_configs:
+                all_buffs.append(
+                    BufferSettings(int(buffer["capacity"]),
+                                    int(buffer["initial_occ"]),
+                                    nj["id"],
+                                    buffer["dst_label"]))
             ctrl_opts = nj["controller"]
+            
             if str(ctrl_opts["type"]).upper() == "PID":
-                buffer_configs = nj["buffers"]
-                all_buffs = [] #remote buffer : buff
-                for buffer in buffer_configs:
-                    all_buffs.append(
-                        BufferSettings(int(buffer["capacity"]),
-                                        int(buffer["initial_occ"]),
-                                        nj["id"],
-                                        buffer["dst_label"]))
-                    
-                nodes[nj["id"]] = (Node(nj["id"],
-                            PIDController(nj["id"], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), int(ctrl_opts["ki_window"]), float(ctrl_opts["kd"]), 
-                                          int(ctrl_opts["diff_step"]), float(ctrl_opts["offset"])), all_buffs, float(nj["frequency"]), server=serv))
+                controller = PIDController(nj["id"], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), int(ctrl_opts["ki_window"]), float(ctrl_opts["kd"]), 
+                                          int(ctrl_opts["diff_step"]), float(ctrl_opts["offset"]))
             else:
                 print("Unknown control scheme " + str(ctrl_opts["type"]))
                 exit(0)
+                
+            nodes[nj["id"]] = Node(nj["id"], controller, all_buffs, float(nj["frequency"]), server=serv)
                 
         links_json = config_json["links"]
         for link in links_json:

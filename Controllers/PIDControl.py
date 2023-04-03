@@ -17,10 +17,13 @@ class PIDController(Controller.Controller):
         self.deadzone = 2
         self.last_c = 0
         self.prev_occ = -1
-    def step(self, buffers_statuses, live : bool):
-        occupancies, initial_occs = buffers_statuses
-        occ = np.mean(occupancies)
-        if live:
+    def step(self,buffers):
+        buffer_vals = []
+        for buffer in buffers:
+            if buffer.live == True:
+                buffer_vals.append(buffer.get_occupancy())
+        if (len(buffer_vals) > 0):
+            occ = np.mean(buffer_vals)
             if (self.prev_occ == -1) : self.prev_occ = occ #first cycle initialisation
             ri = occ - self.prev_occ
             self.integral_window.append(ri) #dt is always one
@@ -34,9 +37,10 @@ class PIDController(Controller.Controller):
             dterm = self.kd * (ri - self.diff_window.popleft())/self.d_step
             self.diff_window.append(ri)
             c =  pterm + iterm + dterm + self.offset
+            self.prev_occ = occ
         else: c = 0
         self.last_c = c
-        self.prev_occ = occ
+        
         return c
     
     def get_control(self):

@@ -10,6 +10,7 @@ class Buffer:
         self.server = server
         self.localNode = localNode
         self.remoteNode = remoteNode
+        self.live = False
         for i in range(initialOcc):
             self.dataq.appendleft(BittideFrame(sender_timestamp=-1, signals=[]))
 
@@ -17,16 +18,16 @@ class Buffer:
         return (self.localNode, self.remoteNode)
     
     def receive(self, frame : BittideFrame):
+        self.live = True
         self.dataq.appendleft(frame)
     
     def pop(self) -> BittideFrame:
-        return self.dataq.pop()
+        if self.live:
+            return self.dataq.pop()
+        else: return BittideFrame(-1,[])
     
     def getSendMessage(self, timestamp, output_signals) -> BittideFrame: #data sent to the simulated medium
         newSendFrame = BittideFrame(sender_timestamp = timestamp, signals=output_signals)
-        # if consumedFrame.sender_timestamp != -1:
-        #     print("Received data sent from node " + self.remoteNode + " at " + str(consumedFrame.sender_timestamp) + " at local time " + str(timestamp))
-        #     print("UGN " + self.localNode + "," +  self.remoteNode + " is " + str(timestamp - consumedFrame.sender_timestamp))
         return newSendFrame
 
     def get_initial_occupancy(self):

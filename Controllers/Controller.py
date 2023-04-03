@@ -2,5 +2,5 @@ class Controller:
     def __init__(self, name):
         self.name = name
     
-    def step(self, occupancies, live : bool):
+    def step(self, buffers):
         return 0

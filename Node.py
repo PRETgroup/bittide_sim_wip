@@ -13,28 +13,20 @@ class Node:
         self.server = server
         self.freq = initialFreq
         self.phase = 0
-        self.live = False
         self.buffers = []
         self.current_delays = {}
         for buffer in buffers:
             self.buffers.append(Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode, server)) #FIXME: make this mapped to label rather than index
             self.current_delays[(name, buffer.remoteNode)] = 0
     
-    def buffer_receive(self, index, value):
-        self.live = True
+    def buffer_receive(self, index, value):            
         self.buffers[index].receive(value)
     
     def step(self):
         # print(self.name)
         self.phase += 1
-        occupancies = []
-        initial_occs = []
-        for buffer in self.buffers:
-            occupancies.append(buffer.get_occupancy())
-            initial_occs.append(buffer.get_initial_occupancy())
-        
 
-        self.freq += self.controller.step((occupancies,initial_occs), self.live)
+        self.freq += self.controller.step(self.buffers)
         if (self.freq <= 1): self.freq = 1 #cap negative frequencies to prevent negative time deltas
         
         all_outputs_to_line = []
@@ -43,7 +35,7 @@ class Node:
         for buffer in self.buffers:
             inboundBuff : BittideFrame = buffer.pop()
             if inboundBuff.sender_timestamp != -1:
-                self.current_delays[buffer.getId()] = self.phase - inboundBuff.sender_timestamp;
+                self.current_delays[buffer.getId()] = self.phase - inboundBuff.sender_timestamp
             else: self.current_delays[buffer.getId()] = 0
             all_inputs_to_fsm.extend(inboundBuff.signals)
 
