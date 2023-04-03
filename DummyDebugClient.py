@@ -12,20 +12,19 @@ sock.connect(server_address)
 
 while(True):
     # Send data
-    message = (input('message>') + '\n').encode()
-    first_name = message
-    print('sending "%s"' % message)
-    sock.send(message)
-    tick_count = 0
-    while (True):
-        data = ""
-        nextchar = sock.recv(1).decode()
-        while nextchar != '\n':
-            data += nextchar
-            nextchar= sock.recv(1).decode()
-        print('received "%s"' % data)
-
-        message = (input('Tick ' + str(tick_count) + '>') + '\n').encode()
-        print('Sending message: "%s"' % message)
-        tick_count += 1
-        sock.send(message)
+    tick_count = -1
+    for line in sys.stdin:
+        message = line.replace('\\n', '\n')
+        for fragment in message.split('\n'):
+            if (fragment == ''): break
+            fragment = (fragment + '\n').encode()
+            print('Tick %d send: "%s"' % (tick_count,fragment))
+            
+            sock.send(fragment)
+            data = ""
+            nextchar = sock.recv(1).decode()
+            while nextchar != '\n':
+                data += nextchar
+                nextchar= sock.recv(1).decode()
+            print('Tick %d receive: "%s"' % (tick_count,data))
+            tick_count += 1
