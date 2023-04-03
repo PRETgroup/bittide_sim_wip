@@ -4,8 +4,8 @@
       "id": "n0",
       "controller": {
         "type": "PID",
-        "kp": 0.5,
-        "ki": 0.001,
+        "kp": 0.2,
+        "ki": 0.0001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,
@@ -31,8 +31,8 @@
       "id": "n1",
       "controller": {
         "type": "PID",
-        "kp": 0.5,
-        "ki": 0.001,
+        "kp": 0.2,
+        "ki": 0.0001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,
@@ -50,7 +50,7 @@
           "initial_occ": 50
         }
       ],
-      "frequency": 170.0,
+      "frequency": 185.0,
       "meta_x": 288,
       "meta_y": 387
     },
@@ -58,8 +58,8 @@
       "id": "n2",
       "controller": {
         "type": "PID",
-        "kp": 0.5,
-        "ki": 0.001,
+        "kp": 0.2,
+        "ki": 0.0001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,
@@ -77,7 +77,7 @@
           "initial_occ": 50
         }
       ],
-      "frequency": 180.0,
+      "frequency": 192.0,
       "meta_x": 427,
       "meta_y": 173
     }
@@ -90,13 +90,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 0,
-          "delay": 0.1
+          "delay": 0.5
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n2",
           "dest_buffer_id": 1,
-          "delay": 0.1
+          "delay": 0.5
         }
       ]
     },
@@ -107,13 +107,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n0",
           "dest_buffer_id": 0,
-          "delay": 0.1
+          "delay": 0.5
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n2",
           "dest_buffer_id": 0,
-          "delay": 0.1
+          "delay": 0.5
         }
       ]
     },
@@ -124,13 +124,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 1,
-          "delay": 0.1
+          "delay": 0.5
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n0",
           "dest_buffer_id": 1,
-          "delay": 0.1
+          "delay": 0.5
         }
       ]
     }

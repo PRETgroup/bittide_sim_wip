@@ -42,19 +42,19 @@ class Plotter:
         # plt.title("Control Values")
         # plt.ylabel("Hz")
         # plt.plot(timesteps, control_outputs, label=node_labels)
-            
+        
+        plt.legend(loc='best')
+        plt.subplot(3, 1, 3)
+        plt.title("Logical Delays")
+        plt.ylabel("Ticks")
+        plt.plot(self.timesteps, self.logical_delay, label=self.buffer_labels)
+
         plt.legend(loc='best')
         plt.subplot(3, 1, 2)
         plt.title("Buffer Occupancies")
         plt.ylabel("Percent")
         plt.plot(self.timesteps, self.buffer_occupancies, label=self.buffer_labels)
 
-        plt.legend(loc='best')
-        plt.subplot(3, 1, 3)
-        plt.title("Logical Delays")
-        plt.ylabel("Ticks")
-        plt.plot(self.timesteps, self.logical_delay, label=self.buffer_labels)
-            
         plt.ylim(0,100)
         plt.legend(loc='best')
 

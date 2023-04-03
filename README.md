@@ -20,4 +20,4 @@ You will need to install some python packages from pip, off the top of my head y
 Removing the disable_app flag will block, attempting to connect to FSM applications
 
 # Known issues:
-The transmission links aren't being pre-filled, so use of a non-zero transmission delay with an integral term will always produce a error term which pulls the frequencies to zero
+~~The transmission links aren't being pre-filled, so use of a non-zero transmission delay with an integral term will always produce a error term which pulls the frequencies to zero~~ FIXED (hopefully)
