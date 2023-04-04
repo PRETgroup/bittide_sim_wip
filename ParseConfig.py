@@ -1,6 +1,7 @@
 import json
 
 from Controllers.PIDControl import PIDController
+from Controllers.Reframer import Reframer
 from Node import Node
 from dataclasses import dataclass
 
@@ -36,13 +37,18 @@ def load_nodes_from_config(path, serv):
                                     buffer["dst_label"]))
             ctrl_opts = nj["controller"]
             
-            if str(ctrl_opts["type"]).upper() == "PID":
-                controller = PIDController(nj["id"], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), int(ctrl_opts["ki_window"]), float(ctrl_opts["kd"]), 
-                                          int(ctrl_opts["diff_step"]), float(ctrl_opts["offset"]))
+            controller_name = str(ctrl_opts["type"]).upper()
+            if controller_name == "PID":
+                controller = PIDController(nj["id"], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), 
+                                           int(ctrl_opts["ki_window"]), float(ctrl_opts["kd"]), 
+                                           int(ctrl_opts["diff_step"]), float(ctrl_opts["offset"]))
+            elif controller_name == "REFRAMER":
+                controller = Reframer(nj["id"], float(ctrl_opts["kp"]),
+                                    float(ctrl_opts["settle_time"]),  float(ctrl_opts["settle_distance"]), float(ctrl_opts["wait_time"]))
             else:
                 print("Unknown control scheme " + str(ctrl_opts["type"]))
                 exit(0)
-                
+
             nodes[nj["id"]] = Node(nj["id"], controller, all_buffs, float(nj["frequency"]), server=serv)
                 
         links_json = config_json["links"]
