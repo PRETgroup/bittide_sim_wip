@@ -26,6 +26,9 @@ class Buffer:
             return self.dataq.pop()
         else: return BittideFrame(-1,[])
     
+    def peek_newest_timestamp(self) -> int:
+        return self.dataq[0].sender_timestamp
+    
     def getSendMessage(self, timestamp, output_signals) -> BittideFrame: #data sent to the simulated medium
         newSendFrame = BittideFrame(sender_timestamp = timestamp, signals=output_signals)
         return newSendFrame

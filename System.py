@@ -52,6 +52,8 @@ if __name__ == "__main__":
             if next_steps[node.name] <= t:
                 out = node.step()
                 next_steps[node.name] += out.nextStep
+                if out.messages == None:
+                    continue
                 for j, value in enumerate(out.messages):
                     link = links[node.name][j]
                     waiting_messages.append(WaitingMessage(link.destNode, link.destBuffer, t + link.delay, value))

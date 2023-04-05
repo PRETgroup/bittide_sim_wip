@@ -3,22 +3,18 @@
     {
       "id": "n0",
       "controller": {
-        "type": "REFRAMER",
-        "kp": 0.03,
-        "settle_time" : 2000,
-        "wait_time" : 16000,
-        "settle_distance" : 0
+        "type": "TSBD"
       },
       "buffers": [
         {
           "dst_label": "n1",
-          "capacity": 400,
-          "initial_occ": 200
+          "capacity": 50,
+          "initial_occ": 25
         },
         {
           "dst_label": "n2",
-          "capacity": 400,
-          "initial_occ": 200
+          "capacity": 50,
+          "initial_occ": 25
         }
       ],
       "frequency": 190.0,
@@ -28,22 +24,18 @@
     {
       "id": "n1",
       "controller": {
-        "type": "REFRAMER",
-        "kp": 0.03,
-        "settle_time" : 2000,
-        "wait_time" : 16000,
-        "settle_distance" : 0
+        "type": "TSBD"
       },
       "buffers": [
         {
           "dst_label": "n0",
-          "capacity": 400,
-          "initial_occ": 200
+          "capacity": 50,
+          "initial_occ": 25
         },
         {
           "dst_label": "n2",
-          "capacity": 400,
-          "initial_occ": 200
+          "capacity": 50,
+          "initial_occ": 25
         }
       ],
       "frequency": 185.0,
@@ -53,22 +45,18 @@
     {
       "id": "n2",
       "controller": {
-        "type": "REFRAMER",
-        "kp": 0.03,
-        "settle_time" : 2000,
-        "wait_time" : 16000,
-        "settle_distance" : 0
+        "type": "TSBD"
       },
       "buffers": [
         {
           "dst_label": "n1",
-          "capacity": 400,
-          "initial_occ": 200
+          "capacity": 50,
+          "initial_occ": 25
         },
         {
           "dst_label": "n0",
-          "capacity": 400,
-          "initial_occ": 200
+          "capacity": 50,
+          "initial_occ": 25
         }
       ],
       "frequency": 189.0,
@@ -84,13 +72,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 0,
-          "delay": 0.0
+          "delay": 0.25
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n2",
           "dest_buffer_id": 1,
-          "delay": 0.0
+          "delay": 0.25
         }
       ]
     },
@@ -101,13 +89,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n0",
           "dest_buffer_id": 0,
-          "delay": 0.0
+          "delay": 0.25
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n2",
           "dest_buffer_id": 0,
-          "delay": 0.0
+          "delay": 0.25
         }
       ]
     },
@@ -118,13 +106,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 1,
-          "delay": 0.0
+          "delay": 0.25
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n0",
           "dest_buffer_id": 1,
-          "delay": 0.0
+          "delay": 0.25
         }
       ]
     }

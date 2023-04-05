@@ -1,4 +1,5 @@
 from Controllers import Controller
+from Controllers.Controller import ControlResult
 import numpy as np
 from collections import deque
 
@@ -15,7 +16,7 @@ class PIDController(Controller.Controller):
         self.offset = offset
         self.last_c = 0
         self.prev_occ = -1
-    def step(self,buffers):
+    def step(self,buffers) -> ControlResult:
         buffer_vals = []
         for buffer in buffers:
             if buffer.live == True:
@@ -39,7 +40,7 @@ class PIDController(Controller.Controller):
         else: c = 0
         self.last_c = c
         
-        return c
+        return ControlResult(c, True)
     
     def get_control(self):
         return self.last_c

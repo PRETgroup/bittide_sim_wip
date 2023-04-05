@@ -2,6 +2,7 @@ import json
 
 from Controllers.PIDControl import PIDController
 from Controllers.Reframer import Reframer
+from Controllers.TSBD import TSBD
 from Node import Node
 from dataclasses import dataclass
 
@@ -36,7 +37,7 @@ def load_nodes_from_config(path, serv):
                                     nj["id"],
                                     buffer["dst_label"]))
             ctrl_opts = nj["controller"]
-            
+            nodes[nj["id"]] = Node(nj["id"], all_buffs, float(nj["frequency"]), server=serv)
             controller_name = str(ctrl_opts["type"]).upper()
             if controller_name == "PID":
                 controller = PIDController(nj["id"], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), 
@@ -45,11 +46,13 @@ def load_nodes_from_config(path, serv):
             elif controller_name == "REFRAMER":
                 controller = Reframer(nj["id"], float(ctrl_opts["kp"]),
                                     float(ctrl_opts["settle_time"]),  float(ctrl_opts["settle_distance"]), float(ctrl_opts["wait_time"]))
+            elif controller_name == "TSBD":
+                controller = TSBD(nj["id"], nodes[nj["id"]])
             else:
                 print("Unknown control scheme " + str(ctrl_opts["type"]))
                 exit(0)
-
-            nodes[nj["id"]] = Node(nj["id"], controller, all_buffs, float(nj["frequency"]), server=serv)
+            nodes[nj["id"]].set_controller(controller)
+            
                 
         links_json = config_json["links"]
         for link in links_json:

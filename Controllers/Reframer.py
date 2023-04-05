@@ -1,5 +1,5 @@
-from numbers import Integral
 from Controllers import Controller
+from Controllers.Controller import ControlResult
 import numpy as np
 from collections import deque
 
@@ -60,7 +60,7 @@ class Reframer(Controller.Controller):
 
         else: c = 0
         self.last_c = c
-        return c
+        return ControlResult(c, True)
     
     def get_control(self):
         return self.last_c
