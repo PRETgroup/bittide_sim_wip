@@ -32,12 +32,12 @@ class Plotter:
         self.buffer_occupancies.append(step_occupancies)
         self.logical_delay.append(step_delays)
     def render(self):
-        plt.figure()
+        plt.figure(figsize=(4, 2), dpi=320)
         plt.subplot(2, 1, 1)
-        plt.title("Frequency")
-        plt.ylabel("Hz")
+        #plt.title("Frequency")
+        #plt.ylabel("Hz")
         plt.plot(self.timesteps, self.node_frequencies, label=self.node_labels)
-
+        
         # plt.subplot(4, 1, 2)
         # plt.title("Control Values")
         # plt.ylabel("Hz")
@@ -56,6 +56,6 @@ class Plotter:
         plt.plot(self.timesteps, self.buffer_occupancies, label=self.buffer_labels)
 
         plt.ylim(0,100)
-        plt.legend(loc='best')
+        # plt.legend(loc='best')
 
         plt.show()

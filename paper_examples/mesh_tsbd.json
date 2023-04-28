@@ -1,0 +1,180 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n2",
+          "capacity": 200,
+          "initial_occ": 100
+        },
+        {
+          "dst_label": "n1",
+          "capacity": 200,
+          "initial_occ": 100
+        }
+      ],
+      "frequency": 1.0,
+      "meta_x": 177,
+      "meta_y": 359
+    },
+    {
+      "id": "n1",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n0",
+          "capacity": 200,
+          "initial_occ": 100
+        },
+        {
+          "dst_label": "n3",
+          "capacity": 200,
+          "initial_occ": 100
+        },
+        {
+          "dst_label": "n2",
+          "capacity": 200,
+          "initial_occ": 100
+        }
+      ],
+      "frequency": 1.1,
+      "meta_x": 446,
+      "meta_y": 363
+    },
+    {
+      "id": "n2",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n3",
+          "capacity": 200,
+          "initial_occ": 100
+        },
+        {
+          "dst_label": "n0",
+          "capacity": 200,
+          "initial_occ": 100
+        },
+        {
+          "dst_label": "n1",
+          "capacity": 200,
+          "initial_occ": 100
+        }
+      ],
+      "frequency": 1.2,
+      "meta_x": 177,
+      "meta_y": 156
+    },
+    {
+      "id": "n3",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n2",
+          "capacity": 200,
+          "initial_occ": 100
+        },
+        {
+          "dst_label": "n1",
+          "capacity": 200,
+          "initial_occ": 100
+        }
+      ],
+      "frequency": 1.3,
+      "meta_x": 446,
+      "meta_y": 160
+    }
+  ],
+  "links": [
+    {
+      "source_id": "n2",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n3",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n0",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        },
+        {
+          "source_buffer_id": 2,
+          "dest_node_id": "n1",
+          "dest_buffer_id": 2,
+          "delay": 0.0
+        }
+      ]
+    },
+    {
+      "source_id": "n3",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n2",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n1",
+          "dest_buffer_id": 1,
+          "delay": 0.0
+        }
+      ]
+    },
+    {
+      "source_id": "n0",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n2",
+          "dest_buffer_id": 1,
+          "delay": 0.0
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n1",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        }
+      ]
+    },
+    {
+      "source_id": "n1",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n0",
+          "dest_buffer_id": 1,
+          "delay": 0.0
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n3",
+          "dest_buffer_id": 1,
+          "delay": 0.0
+        },
+        {
+          "source_buffer_id": 2,
+          "dest_node_id": "n2",
+          "dest_buffer_id": 2,
+          "delay": 0.0
+        }
+      ]
+    }
+  ]
+}

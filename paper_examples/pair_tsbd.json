@@ -1,0 +1,60 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n1",
+          "capacity": 200,
+          "initial_occ": 100
+        }
+      ],
+      "frequency": 1.2,
+      "meta_x": 151,
+      "meta_y": 259
+    },
+    {
+      "id": "n1",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n0",
+          "capacity": 200,
+          "initial_occ": 100
+        }
+      ],
+      "frequency": 1.0,
+      "meta_x": 498,
+      "meta_y": 262
+    }
+  ],
+  "links": [
+    {
+      "source_id": "n0",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n1",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        }
+      ]
+    },
+    {
+      "source_id": "n1",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n0",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        }
+      ]
+    }
+  ]
+}

@@ -35,7 +35,7 @@ class Node:
         self.freq += controlResult.freq_correction
         if controlResult.do_tick:
             self.phase += 1
-            if (self.freq <= 1): self.freq = 1 #cap negative frequencies to prevent negative time deltas
+            if (self.freq < 0): self.freq = 0 #cap negative frequencies to prevent negative time deltas
             
             all_outputs_to_line = []
             all_inputs_to_fsm = []

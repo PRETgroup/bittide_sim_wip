@@ -73,6 +73,12 @@ if __name__ == "__main__":
     bar.finish()
     
     # graphing 
+    throughput_sum = 0.0
+    for node in nodes.values():
+        print("Node " + node.name + " throughput:")
+        print(str(node.phase) + " ticks over " + str(t) + " time units = " + str(node.phase/t) + " ticks per unit")
+        throughput_sum += node.phase/t
+    print("Average system throughput: " + str(throughput_sum / len(nodes)) + " ticks per unit")
     plotter.render()
 
     
