@@ -1,0 +1,141 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n2",
+          "capacity": 2,
+          "initial_occ": 0
+        }
+      ],
+      "frequency": 1.0,
+      "meta_x": 160,
+      "meta_y": 135
+    },
+    {
+      "id": "n1",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n0",
+          "capacity": 2,
+          "initial_occ": 2
+        }
+      ],
+      "frequency": 1.01,
+      "meta_x": 228,
+      "meta_y": 235
+    },
+    {
+      "id": "n2",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n1",
+          "capacity": 2,
+          "initial_occ": 0
+        }
+      ],
+      "frequency": 1.02,
+      "meta_x": 356,
+      "meta_y": 263
+    },
+    {
+      "id": "n3",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n2",
+          "capacity": 2,
+          "initial_occ": 0
+        }
+      ],
+      "frequency": 1.03,
+      "meta_x": 460,
+      "meta_y": 209
+    },
+    {
+      "id": "n4",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "n1",
+          "capacity": 2,
+          "initial_occ": 0
+        }
+      ],
+      "frequency": 1.04,
+      "meta_x": 190,
+      "meta_y": 374
+    }
+  ],
+  "links": [
+    {
+      "source_id": "n0",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n1",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        }
+      ]
+    },
+    {
+      "source_id": "n1",
+      "destinations": [
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n4",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        },
+        {
+          "source_buffer_id": 2,
+          "dest_node_id": "n2",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        }
+      ]
+    },
+    {
+      "source_id": "n4",
+      "destinations": [
+      ]
+    },
+    {
+      "source_id": "n2",
+      "destinations": [
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n3",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        },
+        {
+          "source_buffer_id": 2,
+          "dest_node_id": "n0",
+          "dest_buffer_id": 0,
+          "delay": 0.0
+        }
+      ]
+    },
+    {
+      "source_id": "n3",
+      "destinations": [
+      ]
+    }
+  ]
+}

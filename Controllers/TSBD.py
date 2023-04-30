@@ -8,14 +8,19 @@ class TSBD(Controller.Controller):
         super().__init__(name)
         self.node = node
         for buffer in node.buffers:
-            buffer.live = True #FFP buffers should never have an inactive state
+            buffer.live = True #FFP buffers should never have an inactive state\
+
     def step(self,buffers) -> ControlResult:
          # check that all local buffers are not empty and remote are not full in the worst case
         for buffer in buffers:
             if buffer.get_occupancy() == 0:
                 return ControlResult(0, False)
-            worst_case_occ = buffer.initialOcc - buffer.peek_newest_timestamp() + self.node.phase - self.node.current_delays[buffer.getId()]
-            if (worst_case_occ > buffer.size):
+        for outgoing_link in self.node.outgoing_links:
+            target_link = self.node.outgoing_links[outgoing_link]
+            worst_case_occ = target_link.destInitialOcc - self.node.backpressure_links[target_link.destNode] + self.node.phase - self.node.current_delays[buffer.getId()]
+            #print("Node " + self.name + " predicts that remote buffer to " + target_link.destNode + " has a max occ of " + str(worst_case_occ))
+            if (worst_case_occ >= target_link.destCapacity):
+            #print("remote buffer " + self.node.name + "->" + target_link.destNode + " full!")
                 return ControlResult(0, False)
         return ControlResult(0, True)
     

@@ -2,12 +2,17 @@ from Buffer import Buffer
 from BittideFrame import BittideFrame
 
 class Output:
-    def __init__(self, nextStep, messages):
+    def __init__(self, nextStep, phase, messages):
         self.nextStep = nextStep
+        self.phase=phase
         self.messages = messages
 
+def getSendMessage(timestamp, output_signals) -> BittideFrame: #data sent to the simulated medium
+    newSendFrame = BittideFrame(sender_timestamp = timestamp, signals=output_signals)
+    return newSendFrame
+
 class Node:
-    def __init__(self, name, buffers, initialFreq, server):
+    def __init__(self, name, buffers, initialFreq, server, outgoing_links):
         self.name = name
         self.controller = None
         self.server = server
@@ -16,6 +21,11 @@ class Node:
         self.lastWasSkip = False
         self.buffers = []
         self.current_delays = {}
+        self.outgoing_links = outgoing_links
+        self.backpressure_links = {}
+        for outgoing_link in self.outgoing_links:
+            target_link = self.outgoing_links[outgoing_link]
+            self.backpressure_links[target_link.destNode] = 0
         for buffer in buffers:
             self.buffers.append(Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode, server)) #FIXME: make this mapped to label rather than index
             self.current_delays[(name, buffer.remoteNode)] = 0
@@ -23,9 +33,16 @@ class Node:
     def set_controller(self,controller):
         self.controller = controller
 
-    def buffer_receive(self, index, value):            
-        self.buffers[index].receive(value)
-    
+    def buffer_receive(self, index, value):
+        try:         
+            self.buffers[index].receive(value)
+        except:
+            print("No inbound buffer with index " + str(index) + " at node " + self.name)
+
+    def backpressure_update(self, timestamp):
+        for backpressure_link in self.backpressure_links:
+            self.backpressure_links[backpressure_link] = timestamp
+        
     def step(self):
         # print(self.name)
         if self.controller is None:
@@ -53,14 +70,13 @@ class Node:
             else:
                 outputs_from_fsm = []
 
-            for buffer in self.buffers:
-                sent_frame = buffer.getSendMessage(self.phase, outputs_from_fsm)
-                all_outputs_to_line.append(sent_frame)
+
+            sent_frame = getSendMessage(self.phase, outputs_from_fsm)
             self.lastWasSkip = False
-            return Output(1 / self.freq, all_outputs_to_line)
+            return Output(1 / self.freq, self.phase, sent_frame)
         else:
             self.lastWasSkip = True 
-            return Output(1 / self.freq, None)
+            return Output(1 / self.freq, self.phase, None)
     
     def get_frequency(self):
         if self.lastWasSkip:

@@ -96,7 +96,7 @@ def get_nodes_at_location(graph, pos, nodes):
             if item in nodes:
                 remaining_items.append(item)
     except:
-        pass
+        return tuple()
     return tuple(remaining_items)
 
 def isfloat(num):

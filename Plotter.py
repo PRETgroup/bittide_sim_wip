@@ -9,7 +9,10 @@ class Plotter:
         for node in nodes.values():
             self.node_labels.append(node.name)
             for j in range(len(node.get_occupancies())):
-                self.buffer_labels.append(node.name + "->" + nodes[links[node.name][j].destNode].name)
+                try:
+                    self.buffer_labels.append(node.name + "->" + nodes[links[node.name][j].destNode].name)
+                except:
+                    self.buffer_labels.append(node.name)
         self.timesteps = []
         self.node_frequencies = []
         self.control_outputs = []

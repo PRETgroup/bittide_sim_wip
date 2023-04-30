@@ -17,6 +17,8 @@ class BufferSettings:
 class LinkSettings:
     destNode : str
     destBuffer : str
+    destInitialOcc : int
+    destCapacity : int
     delay : float
 
 def load_nodes_from_config(path, serv):
@@ -27,6 +29,8 @@ def load_nodes_from_config(path, serv):
     with open(path, 'r') as conf:
         config_json = json.load(conf)
         nodes_json = config_json["nodes"]
+        links_json = config_json["links"]
+
         for nj in nodes_json:
             buffer_configs = nj["buffers"]
             all_buffs = [] #remote buffer : buff
@@ -37,7 +41,29 @@ def load_nodes_from_config(path, serv):
                                     nj["id"],
                                     buffer["dst_label"]))
             ctrl_opts = nj["controller"]
-            nodes[nj["id"]] = Node(nj["id"], all_buffs, float(nj["frequency"]), server=serv)
+            for link in links_json:
+                source_id = link["source_id"]
+                if source_id != nj["id"]: continue
+                links[source_id] = {}
+                for destination in link["destinations"]:
+                    #find destination buffer info
+                    for nd in nodes_json:
+                        if nd["id"] != destination['dest_node_id']: continue
+                        for dest_buffer in nd["buffers"]:
+                            if dest_buffer["dst_label"] == source_id:
+                                remote_starting_occ = dest_buffer["initial_occ"]
+                                remote_max_occ = dest_buffer["capacity"]
+                                break
+                            else:
+                                continue
+                        
+                        links[source_id][int(destination["source_buffer_id"])] = LinkSettings(destination["dest_node_id"], 
+                                                                                                int(destination["dest_buffer_id"]), 
+                                                                                                int(remote_starting_occ),
+                                                                                                int(remote_max_occ),
+                                                                                                float(destination["delay"]))
+            nodes[nj["id"]] = Node(nj["id"], all_buffs, float(nj["frequency"]), server=serv, outgoing_links=links[nj["id"]])
+            
             controller_name = str(ctrl_opts["type"]).upper()
             if controller_name == "PID":
                 controller = PIDController(nj["id"], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), 
@@ -53,12 +79,5 @@ def load_nodes_from_config(path, serv):
                 exit(0)
             nodes[nj["id"]].set_controller(controller)
             
-                
-        links_json = config_json["links"]
-        for link in links_json:
-            source_id = link["source_id"]
-            links[source_id] = {}
-            for destination in link["destinations"]:
-                links[source_id][int(destination["source_buffer_id"])] = LinkSettings(destination["dest_node_id"], int(destination["dest_buffer_id"]), float(destination["delay"]))
                 
     return (nodes, links)

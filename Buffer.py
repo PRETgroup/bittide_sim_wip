@@ -1,7 +1,6 @@
 from BittideFrame import BittideFrame
 from collections import deque
 
-
 class Buffer:
     def __init__(self, size, initialOcc, localNode, remoteNode, server):
         self.size = size
@@ -28,10 +27,6 @@ class Buffer:
     
     def peek_newest_timestamp(self) -> int:
         return self.dataq[0].sender_timestamp
-    
-    def getSendMessage(self, timestamp, output_signals) -> BittideFrame: #data sent to the simulated medium
-        newSendFrame = BittideFrame(sender_timestamp = timestamp, signals=output_signals)
-        return newSendFrame
 
     def get_initial_occupancy(self):
         return self.initialOcc

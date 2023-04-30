@@ -5,6 +5,12 @@ import argparse
 from Plotter import Plotter
 from ParseConfig import load_nodes_from_config
 
+class BackPressureMessage():
+    def __init__(self, destNode, destTime, timestamp):
+        self.destNode = destNode
+        self.destTime = destTime
+        self.timestamp=timestamp
+
 class WaitingMessage():
     def __init__(self, destNode, destBuffer, destTime, value):
         self.destNode = destNode
@@ -33,6 +39,7 @@ if __name__ == "__main__":
     for node in nodes:
         next_steps[node] = 1 / nodes[node].freq
     waiting_messages = []
+    backpressure_messages = [] # only used for modelling FFP isFull behavrious
 
     plotter = Plotter(nodes, links)
     next_graph = 0.0
@@ -48,15 +55,21 @@ if __name__ == "__main__":
                 nodes[message.destNode].buffer_receive(message.destBuffer, message.value)
                 waiting_messages.remove(message)
 
+        for i, message in enumerate(backpressure_messages):
+            if message.destTime <= t:
+                nodes[message.destNode].backpressure_update(message.timestamp)
+                backpressure_messages.remove(message)
+
         for node in nodes.values():
             if next_steps[node.name] <= t:
                 out = node.step()
                 next_steps[node.name] += out.nextStep
-                if out.messages == None:
-                    continue
-                for j, value in enumerate(out.messages):
-                    link = links[node.name][j]
-                    waiting_messages.append(WaitingMessage(link.destNode, link.destBuffer, t + link.delay, value))
+                
+                for outgoing_link in links[node.name]:
+                    link = links[node.name][outgoing_link]
+                    backpressure_messages.append(BackPressureMessage(link.destNode, t + link.delay, out.phase))
+                    if out.messages != None:
+                        waiting_messages.append(WaitingMessage(link.destNode, link.destBuffer, t + link.delay, out.messages))
 
         # graph at a lower resolution than the simulation # 
         if next_graph <= t:
