@@ -6,15 +6,16 @@ from Plotter import Plotter
 from ParseConfig import load_nodes_from_config
 
 class BackPressureMessage():
-    def __init__(self, destNode, destTime, timestamp):
+    def __init__(self, sourceNode, destNode, destTime, timestamp):
+        self.sourceNode = sourceNode
         self.destNode = destNode
         self.destTime = destTime
         self.timestamp=timestamp
 
 class WaitingMessage():
-    def __init__(self, destNode, destBuffer, destTime, value):
+    def __init__(self, sourceNode, destNode, destTime, value):
+        self.sourceNode = sourceNode
         self.destNode = destNode
-        self.destBuffer = destBuffer
         self.destTime = destTime
         self.value = value
 
@@ -39,7 +40,7 @@ if __name__ == "__main__":
     for node in nodes:
         next_steps[node] = 1 / nodes[node].freq
     waiting_messages = []
-    backpressure_messages = [] # only used for modelling FFP isFull behavrious
+    backpressure_messages = [] # only used for modelling FFP isFull behaviours
 
     plotter = Plotter(nodes, links)
     next_graph = 0.0
@@ -48,16 +49,16 @@ if __name__ == "__main__":
         serv.handle_fsm_connections(plotter.node_labels)
 
     # main body
-    bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%')
+    #bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%')
     while t <= end_t:
         for i, message in enumerate(waiting_messages):
             if message.destTime <= t:
-                nodes[message.destNode].buffer_receive(message.destBuffer, message.value)
+                nodes[message.destNode].buffer_receive(message.sourceNode, message.value)
                 waiting_messages.remove(message)
 
         for i, message in enumerate(backpressure_messages):
             if message.destTime <= t:
-                nodes[message.destNode].backpressure_update(message.timestamp)
+                nodes[message.destNode].backpressure_update(message.sourceNode, message.timestamp)
                 backpressure_messages.remove(message)
 
         for node in nodes.values():
@@ -67,9 +68,17 @@ if __name__ == "__main__":
                 
                 for outgoing_link in links[node.name]:
                     link = links[node.name][outgoing_link]
-                    backpressure_messages.append(BackPressureMessage(link.destNode, t + link.delay, out.phase))
                     if out.messages != None:
-                        waiting_messages.append(WaitingMessage(link.destNode, link.destBuffer, t + link.delay, out.messages))
+                        waiting_messages.append(WaitingMessage(link.sourceNode, link.destNode, t + link.delay, out.messages))
+
+                for buffer in node.buffers:
+                    #get backwards link characteristic
+                    for link in links[node.buffers[buffer].remoteNode]:
+                        if links[node.buffers[buffer].remoteNode][link].destNode == node.name:
+                            backpressure_messages.append(BackPressureMessage(node.name,node.buffers[buffer].remoteNode, t + 
+                                                                             links[node.buffers[buffer].remoteNode][link].delay, node.phase))
+                            #print("Updating node " + buffer.remoteNode + " with the phase update " + str(node.phase) + " of node " + node.name)
+                            break
 
         # graph at a lower resolution than the simulation # 
         if next_graph <= t:
@@ -82,8 +91,8 @@ if __name__ == "__main__":
             t = min(nextStep, nextMessage.destTime)
         else:
             t = nextStep
-        bar.goto((int)(t/end_t * 100.0))
-    bar.finish()
+        #bar.goto((int)(t/end_t * 100.0))
+   #bar.finish()
     
     # graphing 
     throughput_sum = 0.0

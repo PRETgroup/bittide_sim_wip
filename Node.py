@@ -19,7 +19,7 @@ class Node:
         self.freq = initialFreq
         self.phase = 0
         self.lastWasSkip = False
-        self.buffers = []
+        self.buffers = {}
         self.current_delays = {}
         self.outgoing_links = outgoing_links
         self.backpressure_links = {}
@@ -27,7 +27,7 @@ class Node:
             target_link = self.outgoing_links[outgoing_link]
             self.backpressure_links[target_link.destNode] = 0
         for buffer in buffers:
-            self.buffers.append(Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode, server)) #FIXME: make this mapped to label rather than index
+            self.buffers[buffer.remoteNode] = (Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode, server)) #FIXME: make this mapped to label rather than index
             self.current_delays[(name, buffer.remoteNode)] = 0
     
     def set_controller(self,controller):
@@ -39,9 +39,9 @@ class Node:
         except:
             print("No inbound buffer with index " + str(index) + " at node " + self.name)
 
-    def backpressure_update(self, timestamp):
-        for backpressure_link in self.backpressure_links:
-            self.backpressure_links[backpressure_link] = timestamp
+    def backpressure_update(self, source_node, timestamp):
+            #print("Updating backpressure value of " + str(timestamp) + " from node " + source_node + " to " + self.name)
+            self.backpressure_links[source_node] = timestamp
         
     def step(self):
         # print(self.name)
@@ -54,14 +54,13 @@ class Node:
             self.phase += 1
             if (self.freq < 0): self.freq = 0 #cap negative frequencies to prevent negative time deltas
             
-            all_outputs_to_line = []
             all_inputs_to_fsm = []
             #first during a tick, we provide the local (networked) machine with some inputs from the head of our buffer
             for buffer in self.buffers:
-                inboundBuff : BittideFrame = buffer.pop()
+                inboundBuff : BittideFrame = self.buffers[buffer].pop()
                 if inboundBuff.sender_timestamp != -1:
-                    self.current_delays[buffer.getId()] = self.phase - inboundBuff.sender_timestamp
-                else: self.current_delays[buffer.getId()] = 0
+                    self.current_delays[self.buffers[buffer].getId()] = self.phase - inboundBuff.sender_timestamp
+                else: self.current_delays[self.buffers[buffer].getId()] = 0
                 all_inputs_to_fsm.extend(inboundBuff.signals)
 
             #now we run the tick on the networked node:
@@ -89,7 +88,7 @@ class Node:
     def get_logical_delays(self):
         delays = []
         for buffer in self.buffers:
-            delays.append(self.current_delays[buffer.getId()])
+            delays.append(self.current_delays[self.buffers[buffer].getId()])
         return delays
     
     def get_occupancies(self):
@@ -102,6 +101,6 @@ class Node:
     def get_occupancies_as_percent(self):
         occupancies = []
         for buffer in self.buffers:
-            occupancies.append(buffer.get_occupancy_as_percent())
+            occupancies.append(self.buffers[buffer].get_occupancy_as_percent())
         
         return occupancies

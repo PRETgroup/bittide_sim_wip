@@ -19,8 +19,8 @@ class PIDController(Controller.Controller):
     def step(self,buffers) -> ControlResult:
         buffer_vals = []
         for buffer in buffers:
-            if buffer.live == True:
-                buffer_vals.append(buffer.get_occupancy())
+            if buffers[buffer].live == True:
+                buffer_vals.append(buffers[buffer].get_occupancy())
         if (len(buffer_vals) > 0):
             occ = np.mean(buffer_vals)
             if (self.prev_occ == -1) : self.prev_occ = occ #first cycle initialisation

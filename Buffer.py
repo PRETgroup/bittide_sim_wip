@@ -18,7 +18,9 @@ class Buffer:
     
     def receive(self, frame : BittideFrame):
         self.live = True
+        #print("Before: Buffer " + self.remoteNode +"->"+self.localNode+ " occupancy is " + str(len(self.dataq)))
         self.dataq.appendleft(frame)
+        #print("After: Buffer " + self.remoteNode +"->"+self.localNode+ " occupancy is " + str(len(self.dataq)))
     
     def pop(self) -> BittideFrame:
         if self.live:

@@ -15,8 +15,8 @@ class BufferSettings:
 
 @dataclass
 class LinkSettings:
+    sourceNode : str
     destNode : str
-    destBuffer : str
     destInitialOcc : int
     destCapacity : int
     delay : float
@@ -57,8 +57,7 @@ def load_nodes_from_config(path, serv):
                             else:
                                 continue
                         
-                        links[source_id][int(destination["source_buffer_id"])] = LinkSettings(destination["dest_node_id"], 
-                                                                                                int(destination["dest_buffer_id"]), 
+                        links[source_id][destination["dest_node_id"]] = LinkSettings(source_id, destination["dest_node_id"],  
                                                                                                 int(remote_starting_occ),
                                                                                                 int(remote_max_occ),
                                                                                                 float(destination["delay"]))

@@ -8,11 +8,8 @@ class Plotter:
         
         for node in nodes.values():
             self.node_labels.append(node.name)
-            for j in range(len(node.get_occupancies())):
-                try:
-                    self.buffer_labels.append(node.name + "->" + nodes[links[node.name][j].destNode].name)
-                except:
-                    self.buffer_labels.append(node.name)
+            for link in links[node.name]:
+                self.buffer_labels.append(node.name + "->" + links[node.name][link].destNode)
         self.timesteps = []
         self.node_frequencies = []
         self.control_outputs = []
@@ -35,7 +32,7 @@ class Plotter:
         self.buffer_occupancies.append(step_occupancies)
         self.logical_delay.append(step_delays)
     def render(self):
-        plt.figure(figsize=(4, 2), dpi=320)
+        plt.figure(figsize=(4, 2), dpi=160)
         plt.subplot(2, 1, 1)
         #plt.title("Frequency")
         #plt.ylabel("Hz")
@@ -56,9 +53,9 @@ class Plotter:
         plt.subplot(2, 1, 2)
         plt.title("Buffer Occupancies")
         plt.ylabel("Percent")
-        plt.plot(self.timesteps, self.buffer_occupancies, label=self.buffer_labels)
+        plt.plot(self.timesteps, self.buffer_occupancies, label=self.buffer_labels,alpha=0.7)
 
-        plt.ylim(0,100)
-        # plt.legend(loc='best')
+        plt.ylim(-5,105)
+        plt.legend(loc='best')
 
         plt.show()
