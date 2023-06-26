@@ -9,7 +9,7 @@
         {
           "dst_label": "C",
           "capacity": 20,
-          "initial_occ": 3
+          "initial_occ": 1
         }
       ],
       "frequency": 1.0,

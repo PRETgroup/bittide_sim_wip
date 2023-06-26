@@ -1,0 +1,114 @@
+{
+  "nodes": [
+    {
+      "id": "A",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+      ],
+      "frequency": 1.3,
+      "meta_x": 143,
+      "meta_y": 241
+    },
+    {
+      "id": "B",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "A",
+          "capacity": 10,
+          "initial_occ": 0
+        }
+      ],
+      "frequency": 1.2,
+      "meta_x": 303,
+      "meta_y": 346
+    },
+    {
+      "id": "C",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "A",
+          "capacity": 10,
+          "initial_occ": 0
+        }
+      ],
+      "frequency": 1.1,
+      "meta_x": 303,
+      "meta_y": 152
+    },
+    {
+      "id": "D",
+      "controller": {
+        "type": "TSBD"
+      },
+      "buffers": [
+        {
+          "dst_label": "B",
+          "capacity": 10,
+          "initial_occ": 0
+        },
+        {
+          "dst_label": "C",
+          "capacity": 10,
+          "initial_occ": 0
+        }
+      ],
+      "frequency": 1.4,
+      "meta_x": 495,
+      "meta_y": 247
+    }
+  ],
+  "links": [
+    {
+      "source_id": "A",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "B",
+          "dest_buffer_id": 0,
+          "delay": 1.0
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "C",
+          "dest_buffer_id": 0,
+          "delay": 1.0
+        }
+      ]
+    },
+    {
+      "source_id": "B",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "D",
+          "dest_buffer_id": 0,
+          "delay": 1.0
+        }
+      ]
+    },
+    {
+      "source_id": "D",
+      "destinations": [
+      ]
+    },
+    {
+      "source_id": "C",
+      "destinations": [
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "D",
+          "dest_buffer_id": 1,
+          "delay": 1.0
+        }
+      ]
+    }
+  ]
+}

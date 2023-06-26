@@ -17,7 +17,7 @@ class TSBD(Controller.Controller):
                 return ControlResult(0, False)
         for outgoing_link in self.node.outgoing_links:
             target_link = self.node.outgoing_links[outgoing_link]
-            worst_case_occ = target_link.destInitialOcc - self.node.backpressure_links[target_link.destNode] + self.node.phase - self.node.current_delays[buffers[buffer].getId()]
+            worst_case_occ = target_link.destInitialOcc - self.node.backpressure_links[target_link.destNode] + self.node.phase
             # if self.name == "D":
             #         print("Predicted occ of E:")
             #         print(target_link.destInitialOcc)
