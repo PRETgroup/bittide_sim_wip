@@ -7,8 +7,8 @@ class Output:
         self.phase=phase
         self.messages = messages
 
-def getSendMessage(timestamp, output_signals) -> BittideFrame: #data sent to the simulated medium
-    newSendFrame = BittideFrame(sender_timestamp = timestamp, signals=output_signals)
+def getSendMessage(timestamp, output_signals, sender_phys_time) -> BittideFrame: #data sent to the simulated medium
+    newSendFrame = BittideFrame(sender_timestamp = timestamp, sender_phys_time=sender_phys_time, signals=output_signals)
     return newSendFrame
 
 class Node:
@@ -43,7 +43,7 @@ class Node:
             #print("Updating backpressure value of " + str(timestamp) + " from node " + source_node + " to " + self.name)
             self.backpressure_links[source_node] = timestamp
         
-    def step(self):
+    def step(self, steptime):
         # print(self.name)
         if self.controller is None:
             print("Step attempted without an assigned controller! Exiting...")
@@ -62,6 +62,7 @@ class Node:
                     self.current_delays[self.buffers[buffer].getId()] = self.phase - inboundBuff.sender_timestamp
                 else: self.current_delays[self.buffers[buffer].getId()] = 0
                 all_inputs_to_fsm.extend(inboundBuff.signals)
+                self.buffers[buffer].add_latency_measurement(steptime-inboundBuff.sender_phys_time)
 
             #now we run the tick on the networked node:
             if (self. server is not None):
@@ -70,7 +71,7 @@ class Node:
                 outputs_from_fsm = []
 
 
-            sent_frame = getSendMessage(self.phase, outputs_from_fsm)
+            sent_frame = getSendMessage(self.phase, outputs_from_fsm, steptime)
             self.lastWasSkip = False
             return Output(1 / self.freq, self.phase, sent_frame)
         else:

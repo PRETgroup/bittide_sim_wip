@@ -9,7 +9,7 @@ class Plotter:
         for node in nodes.values():
             self.node_labels.append(node.name)
             for link in links[node.name]:
-                self.buffer_labels.append(node.name + "->" + links[node.name][link].destNode)
+                self.buffer_labels.append(links[node.name][link].destNode + "->" + node.name)
         self.timesteps = []
         self.node_frequencies = []
         self.control_outputs = []
@@ -32,15 +32,15 @@ class Plotter:
         self.buffer_occupancies.append(step_occupancies)
         self.logical_delay.append(step_delays)
     def render(self):
-        plt.figure(figsize=(4, 2), dpi=160)
+        #plt.figure(figsize=(4, 3), dpi=160)
         plt.subplot(2, 1, 1)
-        #plt.title("Frequency")
+        plt.title("Frequency")
         #plt.ylabel("Hz")
         plt.plot(self.timesteps, self.node_frequencies, label=self.node_labels)
         
         # plt.subplot(4, 1, 2)
         # plt.title("Control Values")
-        # plt.ylabel("Hz")
+        plt.ylabel("Hz")
         # plt.plot(timesteps, control_outputs, label=node_labels)
         
         # plt.legend(loc='best')
@@ -56,6 +56,6 @@ class Plotter:
         plt.plot(self.timesteps, self.buffer_occupancies, label=self.buffer_labels,alpha=0.7)
 
         plt.ylim(-5,105)
-        plt.legend(loc='best')
+        #plt.legend(loc='best')
 
         plt.show()

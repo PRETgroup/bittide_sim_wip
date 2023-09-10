@@ -8,10 +8,11 @@ class Buffer:
         self.initialOcc = initialOcc
         self.server = server
         self.localNode = localNode
+        self.latency_sum = 0.0
         self.remoteNode = remoteNode
         self.live = False
         for i in range(initialOcc):
-            self.dataq.appendleft(BittideFrame(sender_timestamp=-1, signals=[]))
+            self.dataq.appendleft(BittideFrame(sender_timestamp=-1,sender_phys_time=-1, signals=[]))
 
     def getId(self):
         return (self.localNode, self.remoteNode)
@@ -25,10 +26,13 @@ class Buffer:
     def pop(self) -> BittideFrame:
         if self.live:
             return self.dataq.pop()
-        else: return BittideFrame(-1,[])
+        else: return BittideFrame(-1,-1,[])
     
     def peek_newest_timestamp(self) -> int:
         return self.dataq[0].sender_timestamp
+    
+    def add_latency_measurement(self, latency):
+        self.latency_sum += latency
 
     def get_initial_occupancy(self):
         return self.initialOcc

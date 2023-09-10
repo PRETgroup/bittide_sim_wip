@@ -1,6 +1,7 @@
 import json
 
 from Controllers.PIDControl import PIDController
+from Controllers.PID_FFP import PIDFFPController
 from Controllers.Reframer import Reframer
 from Controllers.TSBD import TSBD
 from Node import Node
@@ -73,6 +74,10 @@ def load_nodes_from_config(path, serv):
                                     float(ctrl_opts["settle_time"]),  float(ctrl_opts["settle_distance"]), float(ctrl_opts["wait_time"]))
             elif controller_name == "TSBD":
                 controller = TSBD(nj["id"], nodes[nj["id"]])
+            elif controller_name == "PID_FFP":
+                controller = PIDFFPController(nj["id"], nodes[nj["id"]],float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), 
+                                           int(ctrl_opts["ki_window"]), float(ctrl_opts["kd"]), 
+                                           int(ctrl_opts["diff_step"]), float(ctrl_opts["offset"]))
             else:
                 print("Unknown control scheme " + str(ctrl_opts["type"]))
                 exit(0)
