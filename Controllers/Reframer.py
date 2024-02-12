@@ -32,8 +32,7 @@ class Reframer(Controller.Controller):
     def step(self,buffers):
         buffer_vals = []
         for buffer in buffers:
-            if buffers[buffer].live == True:
-                buffer_vals.append(buffers[buffer].get_occupancy())
+            buffer_vals.append(buffers[buffer].get_occupancy())
         if (len(buffer_vals) > 0):
             occ = np.mean(buffer_vals)
             if (self.prev_occ == -1) : self.prev_occ = occ #first cycle initialisation

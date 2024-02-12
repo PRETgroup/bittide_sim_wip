@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%') #progress bar
     delayGenerator = DelayGenerator(
-        jitter_size=0.0,jitter_frequency=0,spike_size=0,spike_width=0.0,spike_period=1,delay_size=0,delay_start=0,delay_end=0) #modelling various delay attacks
+        jitter_size=0.0,jitter_frequency=0,spike_size=0,spike_width=0.0,spike_period=1,delay_size=2,delay_start=10000,delay_end=50000) #modelling various delay attacks
     
     # pre-fill links with in-flight frames
     # the number in flight will be link length / sender timestep:

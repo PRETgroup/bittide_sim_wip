@@ -6,12 +6,12 @@ For argument reference:
 
 To view control graphs without a state machine attached:
 
-`python3 System.py --conf arch.json --disable_app`
+`python3 System.py --conf arch.json`
 
 Included are three example config files, one for each of the PI, Reframing, and TSBD controllers with a three-node mesh topology.
 
 To use the architecture creation tool:
-`python3 GraphyMaker.py`
+`python3 GraphMaker.py`
 
 
 You will need to install some python packages from pip, off the top of my head you'll probably want:
