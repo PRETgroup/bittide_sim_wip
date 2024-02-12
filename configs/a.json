@@ -1,0 +1,21 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "controller": {
+        "type": "PID",
+        "kp": 0,
+        "ki": 0,
+        "ki_window": 20,
+        "kd": 0,
+        "diff_step": 1,
+        "offset": 0
+      },
+      "buffers": [],
+      "frequency": 1000,
+      "meta_x": 307,
+      "meta_y": 306
+    }
+  ],
+  "links": []
+}

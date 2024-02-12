@@ -1,7 +1,7 @@
 {
   "nodes": [
     {
-      "id": "n0",
+      "id": "A",
       "controller": {
         "type": "PID",
         "kp": 0.0015,
@@ -13,12 +13,12 @@
       },
       "buffers": [
         {
-          "dst_label": "n2",
+          "dst_label": "C",
           "capacity": 200,
           "initial_occ": 100
         },
         {
-          "dst_label": "n1",
+          "dst_label": "B",
           "capacity": 200,
           "initial_occ": 100
         }
@@ -28,7 +28,7 @@
       "meta_y": 359
     },
     {
-      "id": "n1",
+      "id": "B",
       "controller": {
         "type": "PID",
         "kp": 0.0015,
@@ -40,17 +40,17 @@
       },
       "buffers": [
         {
-          "dst_label": "n0",
+          "dst_label": "A",
           "capacity": 200,
           "initial_occ": 100
         },
         {
-          "dst_label": "n3",
+          "dst_label": "D",
           "capacity": 200,
           "initial_occ": 100
         },
         {
-          "dst_label": "n2",
+          "dst_label": "C",
           "capacity": 200,
           "initial_occ": 100
         }
@@ -60,7 +60,7 @@
       "meta_y": 363
     },
     {
-      "id": "n2",
+      "id": "C",
       "controller": {
         "type": "PID",
         "kp": 0.0015,
@@ -72,17 +72,17 @@
       },
       "buffers": [
         {
-          "dst_label": "n3",
+          "dst_label": "D",
           "capacity": 200,
           "initial_occ": 100
         },
         {
-          "dst_label": "n0",
+          "dst_label": "A",
           "capacity": 200,
           "initial_occ": 100
         },
         {
-          "dst_label": "n1",
+          "dst_label": "B",
           "capacity": 200,
           "initial_occ": 100
         }
@@ -92,7 +92,7 @@
       "meta_y": 156
     },
     {
-      "id": "n3",
+      "id": "D",
       "controller": {
         "type": "PID",
         "kp": 0.0015,
@@ -104,12 +104,12 @@
       },
       "buffers": [
         {
-          "dst_label": "n2",
+          "dst_label": "C",
           "capacity": 200,
           "initial_occ": 100
         },
         {
-          "dst_label": "n1",
+          "dst_label": "B",
           "capacity": 200,
           "initial_occ": 100
         }
@@ -121,82 +121,82 @@
   ],
   "links": [
     {
-      "source_id": "n2",
+      "source_id": "C",
       "destinations": [
         {
           "source_buffer_id": 0,
-          "dest_node_id": "n3",
+          "dest_node_id": "D",
           "dest_buffer_id": 0,
-          "delay": 0.0
+          "delay": 2
         },
         {
           "source_buffer_id": 1,
-          "dest_node_id": "n0",
+          "dest_node_id": "A",
           "dest_buffer_id": 0,
-          "delay": 0.0
+          "delay": 2
         },
         {
           "source_buffer_id": 2,
-          "dest_node_id": "n1",
+          "dest_node_id": "B",
           "dest_buffer_id": 2,
-          "delay": 0.0
+          "delay": 2
         }
       ]
     },
     {
-      "source_id": "n3",
+      "source_id": "D",
       "destinations": [
         {
           "source_buffer_id": 0,
-          "dest_node_id": "n2",
+          "dest_node_id": "C",
           "dest_buffer_id": 0,
-          "delay": 0.0
+          "delay": 2
         },
         {
           "source_buffer_id": 1,
-          "dest_node_id": "n1",
+          "dest_node_id": "B",
           "dest_buffer_id": 1,
-          "delay": 0.0
+          "delay": 2
         }
       ]
     },
     {
-      "source_id": "n0",
+      "source_id": "A",
       "destinations": [
         {
           "source_buffer_id": 0,
-          "dest_node_id": "n2",
+          "dest_node_id": "C",
           "dest_buffer_id": 1,
-          "delay": 0.0
+          "delay": 2
         },
         {
           "source_buffer_id": 1,
-          "dest_node_id": "n1",
+          "dest_node_id": "B",
           "dest_buffer_id": 0,
-          "delay": 0.0
+          "delay": 2
         }
       ]
     },
     {
-      "source_id": "n1",
+      "source_id": "B",
       "destinations": [
         {
           "source_buffer_id": 0,
-          "dest_node_id": "n0",
+          "dest_node_id": "A",
           "dest_buffer_id": 1,
-          "delay": 0.0
+          "delay": 2
         },
         {
           "source_buffer_id": 1,
-          "dest_node_id": "n3",
+          "dest_node_id": "D",
           "dest_buffer_id": 1,
-          "delay": 0.0
+          "delay": 2
         },
         {
           "source_buffer_id": 2,
-          "dest_node_id": "n2",
+          "dest_node_id": "C",
           "dest_buffer_id": 2,
-          "delay": 0.0
+          "delay": 2
         }
       ]
     }

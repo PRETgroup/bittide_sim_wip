@@ -5,7 +5,7 @@ from numpy import linspace
 import numpy as np
 
 class DelayGenerator:
-    def __init__(self, jitter_size, jitter_frequency, spike_size, spike_width, spike_period, delay_size, delay_start):
+    def __init__(self, jitter_size, jitter_frequency, spike_size, spike_width, spike_period, delay_size, delay_start,delay_end):
         self.jitter_size = jitter_size
         self.jitter_frequency = jitter_frequency
         self.spike_size = spike_size
@@ -13,11 +13,12 @@ class DelayGenerator:
         self.spike_period = spike_period
         self.delay_size = delay_size
         self.delay_start = delay_start
+        self.delay_end = delay_end
     
     def get_delay(self,time):
         jitter = self.jitter_size * sin((2 * pi * self.jitter_frequency) * time)
         spike = self.spike_size if ((time+self.spike_width) % self.spike_period) < self.spike_width else 0
-        delay = self.delay_size if (time > self.delay_start) else 0
+        delay = self.delay_size if (time > self.delay_start) and (time < self.delay_end) else 0
         return jitter+spike+delay
     
 if __name__ == "__main__":

@@ -19,7 +19,7 @@
       "buffers": [
         {
           "dst_label": "A",
-          "capacity": 10,
+          "capacity": 30,
           "initial_occ": 0
         }
       ],
@@ -35,7 +35,7 @@
       "buffers": [
         {
           "dst_label": "A",
-          "capacity": 10,
+          "capacity": 30,
           "initial_occ": 0
         }
       ],
@@ -51,12 +51,12 @@
       "buffers": [
         {
           "dst_label": "B",
-          "capacity": 10,
+          "capacity": 30,
           "initial_occ": 0
         },
         {
           "dst_label": "C",
-          "capacity": 10,
+          "capacity": 30,
           "initial_occ": 0
         }
       ],
@@ -73,13 +73,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "B",
           "dest_buffer_id": 0,
-          "delay": 1.0
+          "delay": 2.0
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "C",
           "dest_buffer_id": 0,
-          "delay": 1.0
+          "delay": 2.0
         }
       ]
     },
@@ -90,7 +90,7 @@
           "source_buffer_id": 0,
           "dest_node_id": "D",
           "dest_buffer_id": 0,
-          "delay": 1.0
+          "delay": 2.0
         }
       ]
     },
@@ -106,7 +106,7 @@
           "source_buffer_id": 1,
           "dest_node_id": "D",
           "dest_buffer_id": 1,
-          "delay": 1.0
+          "delay": 2.0
         }
       ]
     }

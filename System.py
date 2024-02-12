@@ -1,84 +1,99 @@
 from collections import deque
-from operator import attrgetter
 import random
+from BittideFrame import BittideFrame
 from ControlServer import ControlServer
 from progress.bar import IncrementalBar
 import argparse
 from DelayGenerator import DelayGenerator
 from Plotter import Plotter
+from math import floor
 from ParseConfig import load_nodes_from_config
-
-class BackPressureMessage():
-    def __init__(self, sourceNode, destNode, destTime, timestamp):
-        self.sourceNode = sourceNode
-        self.destNode = destNode
-        self.destTime = destTime
-        self.timestamp=timestamp
-
-class WaitingMessage():
-    def __init__(self, sourceNode, destNode, destTime, value):
-        self.sourceNode = sourceNode
-        self.destNode = destNode
-        self.destTime = destTime
-        self.value = value
+from MessageTypes import *
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run bittide execution simulation')
     parser.add_argument('--conf', help='config file path', required=True)
-    parser.add_argument('--graph_step', dest="graph_step", help='Graphing intervals', default=0.001, type=float)
-    parser.add_argument('--duration', dest="duration", help='Simulation duration in sim time', default=1, type=float)
-    parser.add_argument('--disable_app', action='store_true', help='Simulate the control system without an attached app')
+    parser.add_argument('--graph_step', dest="graph_step", help='Graphing intervals', default=-1, type=float)
+    parser.add_argument('--duration', dest="duration", help='Simulation duration in sim time', default=-1, type=float)
+    parser.add_argument('--enable_app', action='store_true', help='Simulate the control system with an attached app')
     args = parser.parse_args()
     graph_step = args.graph_step
+
     end_t = args.duration
     random.seed(a=1, version=2)
     
-    if not args.disable_app:
+    if args.enable_app:
         serv = ControlServer(50000)
     else:
         serv = None
+
     nodes, links = load_nodes_from_config(args.conf, serv)
 
     t = 0.0
     next_steps = {}
+    fastest_node_freq = 0
     for node in nodes:
         next_steps[node] = 1 / nodes[node].freq
+        if nodes[node].freq > fastest_node_freq:
+            fastest_node_freq = nodes[node].freq
+
+    if graph_step == -1: #infer a default graph step from node frequencies (2.1x the fastest node)
+        graph_step = 1 / (2.1 * fastest_node_freq)
+
+    if end_t == -1: #infer a default duration from node frequencies
+        end_t = 40000 / fastest_node_freq
+        
+
     waiting_messages = deque()
     backpressure_messages = [] # only used for modelling FFP isFull behaviours
 
     plotter = Plotter(nodes, links)
-    next_graph = 0.0
+    next_graph = 0.0 # datapoint plotting timer
 
-    if serv is not None:
+    if serv is not None: # await networked SCChart, if enabled
         serv.handle_fsm_connections(plotter.node_labels)
 
-    # main body
-    bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%')
+    bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%') #progress bar
     delayGenerator = DelayGenerator(
-        jitter_size=0.01,jitter_frequency=0.1,spike_size=0.2,spike_width=0.01,spike_period=350,delay_size=0,delay_start=70)
+        jitter_size=0.0,jitter_frequency=0,spike_size=0,spike_width=0.0,spike_period=1,delay_size=0,delay_start=0,delay_end=0) #modelling various delay attacks
+    
+    # pre-fill links with in-flight frames
+    # the number in flight will be link length / sender timestep:
+    for node in nodes.values():
+        for outgoing_link in links[node.name]: #move output messages to outgoing link
+            link = links[node.name][outgoing_link]
+            num_in_flight = link.delay * nodes[link.sourceNode].freq
+            spacing = 1 / nodes[link.sourceNode].freq
+            for i in range(floor(num_in_flight)):
+                waiting_messages.append(WaitingMessage(link.sourceNode, link.destNode, spacing*(1+i), BittideFrame(sender_timestamp=-1,sender_phys_time=-1, signals=[])))
+    
+    ################################################# main simulation loop
     while t <= end_t:
+
+        # deliver in-flight messages to receiver
         while(len(waiting_messages) > 0 and waiting_messages[0].destTime <= t):
             message = waiting_messages[0]
             nodes[message.destNode].buffer_receive(message.sourceNode, message.value)
             waiting_messages.popleft()
 
+        # deliver in-flight backpressure messages (FFP only)
         while(len(backpressure_messages) > 0 and backpressure_messages[0].destTime <= t):
             message = backpressure_messages[0]
             nodes[message.destNode].backpressure_update(message.sourceNode, message.timestamp)
             backpressure_messages.remove(message)
 
+        # run next node tick(s)
         for node in nodes.values():
-            if next_steps[node.name] <= t:
-                out = node.step(t)
-                next_steps[node.name] += out.nextStep
+            if next_steps[node.name] <= t: #check if tick deadline has expired
+                out = node.step(t) #run simulation tick
+                next_steps[node.name] += out.nextStep #update next tick deadline
                 
-                for outgoing_link in links[node.name]:
+                for outgoing_link in links[node.name]: #move output messages to outgoing links
                     link = links[node.name][outgoing_link]
                     if out.messages != None:
                         waiting_messages.append(WaitingMessage(link.sourceNode, link.destNode, t + link.delay + delayGenerator.get_delay(t), out.messages))
 
-                for buffer in node.buffers:
-                    #get backwards link characteristic
+                for buffer in node.buffers: #transmit a backpressure message on reverse link (FFP)
                     for link in links[node.buffers[buffer].remoteNode]:
                         if links[node.buffers[buffer].remoteNode][link].destNode == node.name:
                             backpressure_messages.append(BackPressureMessage(node.name,node.buffers[buffer].remoteNode, t + 
@@ -90,6 +105,7 @@ if __name__ == "__main__":
             plotter.plot(t)
             next_graph += graph_step
 
+        #jump the simulation time to the next simulation event (machine tick or message delivery)
         nextStep = min(next_steps[min(next_steps,key=next_steps.get)], next_graph)
         if len(waiting_messages) > 0:
             nextMessage = waiting_messages[0]
@@ -97,8 +113,9 @@ if __name__ == "__main__":
         else:
             t = nextStep
         bar.goto((int)(t/end_t * 100.0))
-    bar.finish()
+    ################################################
     
+    bar.finish()
     # graphing 
     responsetime_sum =0.0
     throughput_sum = 0.0
@@ -109,8 +126,10 @@ if __name__ == "__main__":
         for buffer in node.buffers:
             local_id,remote_id = node.buffers[buffer].getId()
             print("Communication " + str(remote_id) + "->" + str(local_id) + " average response time:")
+            responsetime_sum += node.buffers[buffer].latency_sum / node.phase
             print(node.buffers[buffer].latency_sum / node.phase)
-    print("Average system throughput: " + str(throughput_sum / len(nodes)) + " ticks per unit")
+    print("Average system throughput: " + str(throughput_sum / len(nodes)) + " ticks per simulated second")
+    print("Average point to point latency: " + str(responsetime_sum / len(nodes)) + " ticks per simulated second")
     plotter.render()
 
     

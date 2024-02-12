@@ -15,47 +15,48 @@ class Plotter:
         self.control_outputs = []
         self.buffer_occupancies = []
         self.logical_delay = []
+        self.buffer_latencies = []
+        self.jitter = []
 
     def plot(self,t):
         step_frequencies = []
         step_outputs = []
         step_occupancies = []
         step_delays = []
+        step_jitter = []
+        step_latencies = []
         for node in self.nodes.values():
+            step_jitter.append(node.last_jitter)
+            step_latencies.extend(node.get_latencies())
             step_frequencies.append(node.get_frequency())
             step_outputs.append(node.get_control_value())
             step_occupancies.extend(node.get_occupancies_as_percent())
             step_delays.extend(node.get_logical_delays())
         self.timesteps.append(t)
+        self.jitter.append(step_jitter)
         self.node_frequencies.append(step_frequencies)
         self.control_outputs.append(step_outputs)
         self.buffer_occupancies.append(step_occupancies)
+        self.buffer_latencies.append(step_latencies)
         self.logical_delay.append(step_delays)
     def render(self):
-        #plt.figure(figsize=(4, 3), dpi=160)
+        plt.figure(figsize=(4, 2), dpi=160)
         plt.subplot(2, 1, 1)
         plt.title("Frequency")
-        #plt.ylabel("Hz")
-        plt.plot(self.timesteps, self.node_frequencies, label=self.node_labels)
-        
-        # plt.subplot(4, 1, 2)
-        # plt.title("Control Values")
         plt.ylabel("Hz")
-        # plt.plot(timesteps, control_outputs, label=node_labels)
-        
-        # plt.legend(loc='best')
-        # plt.subplot(3, 1, 3)
-        # plt.title("Logical Delays")
-        # plt.ylabel("Ticks")
-        # plt.plot(self.timesteps, self.logical_delay, label=self.buffer_labels)
+        plt.plot(self.timesteps, self.node_frequencies, label=self.node_labels)
 
         plt.legend(loc='best')
         plt.subplot(2, 1, 2)
         plt.title("Buffer Occupancies")
-        plt.ylabel("Percent")
-        plt.plot(self.timesteps, self.buffer_occupancies, label=self.buffer_labels,alpha=0.7)
 
-        plt.ylim(-5,105)
-        #plt.legend(loc='best')
+        tnrfont = {'fontname':'Times New Roman'}
+
+        plt.ylabel("Percent Occ. ")
+        plt.xlabel("firing count")
+        plt.plot(self.timesteps, self.buffer_occupancies, label=self.buffer_labels,alpha=0.7)
+        plt.xticks(fontproperties='Times New Roman', size=10)
+        plt.yticks(fontproperties='Times New Roman', size=10)
+        plt.legend(fontsize=8,loc='lower right',ncol=2, frameon=False, borderpad=0,labelspacing=0)
 
         plt.show()

@@ -16,8 +16,12 @@ class Node:
         self.name = name
         self.controller = None
         self.server = server
+        self.initialFreq = initialFreq
         self.freq = initialFreq
         self.phase = 0
+        self.last_step_time = 0
+        self.last_jitter = 0
+        self.last_period = 0
         self.lastWasSkip = False
         self.buffers = {}
         self.current_delays = {}
@@ -49,10 +53,18 @@ class Node:
             print("Step attempted without an assigned controller! Exiting...")
             exit(0)
         controlResult = self.controller.step(self.buffers)
-        self.freq += controlResult.freq_correction
+        self.freq = self.initialFreq + controlResult.freq_correction
+
         if controlResult.do_tick:
+            #telemetry###
+            recent_period = steptime - self.last_step_time
+            self.last_jitter = abs(recent_period - self.last_period)
+            self.last_period = recent_period
+            self.last_step_time = steptime
+            #############
+
             self.phase += 1
-            if (self.freq < 0): self.freq = 0 #cap negative frequencies to prevent negative time deltas
+            if (self.freq < 0.01): self.freq = 0.01 #cap negative frequencies to prevent negative time deltas
             
             all_inputs_to_fsm = []
             #first during a tick, we provide the local (networked) machine with some inputs from the head of our buffer
@@ -95,9 +107,15 @@ class Node:
     def get_occupancies(self):
         occupancies = []
         for buffer in self.buffers:
-            occupancies.append(buffer.get_occupancy())
+            occupancies.append(self.buffers[buffer].get_occupancy())
         
         return occupancies
+    
+    def get_latencies(self):
+        latencies = []
+        for buffer in self.buffers:
+            latencies.append(self.buffers[buffer].last_latency)
+        return latencies
     
     def get_occupancies_as_percent(self):
         occupancies = []

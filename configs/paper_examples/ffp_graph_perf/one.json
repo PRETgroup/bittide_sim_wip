@@ -8,8 +8,8 @@
       "buffers": [
         {
           "dst_label": "C",
-          "capacity": 20,
-          "initial_occ": 1
+          "capacity": 50,
+          "initial_occ": 9
         }
       ],
       "frequency": 1.0,
@@ -24,7 +24,7 @@
       "buffers": [
         {
           "dst_label": "A",
-          "capacity": 20,
+          "capacity": 50,
           "initial_occ": 0 
         }
       ],
@@ -40,7 +40,7 @@
       "buffers": [
         {
           "dst_label": "B",
-          "capacity": 20,
+          "capacity": 50,
           "initial_occ": 0 
         }
       ],
@@ -56,7 +56,7 @@
       "buffers": [
         {
           "dst_label": "C",
-          "capacity": 20,
+          "capacity": 50,
           "initial_occ": 0 
         }
       ],
@@ -72,7 +72,7 @@
       "buffers": [
         {
           "dst_label": "B",
-          "capacity": 20,
+          "capacity": 50,
           "initial_occ": 0 
         }
       ],
@@ -88,12 +88,12 @@
       "buffers": [
         {
           "dst_label": "C",
-          "capacity": 20,
+          "capacity": 50,
           "initial_occ": 0 
         },
         {
           "dst_label": "D",
-          "capacity": 20,
+          "capacity": 50,
           "initial_occ": 0 
         }
       ],
