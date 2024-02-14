@@ -4,6 +4,7 @@ from collections import deque
 class Buffer:
     def __init__(self, size, initialOcc, localNode, remoteNode, server):
         self.size = size
+        self.live = False
         self.dataq = deque(maxlen=size)
         self.initialOcc = initialOcc
         self.server = server
@@ -18,10 +19,13 @@ class Buffer:
         return (self.localNode, self.remoteNode)
     
     def receive(self, frame : BittideFrame):
+        self.live = True
         self.dataq.appendleft(frame)
     
     def pop(self) -> BittideFrame:
-        return self.dataq.pop()
+        if self.live:
+            return self.dataq.pop()
+        else: return BittideFrame(sender_timestamp=-1, sender_phys_time=-1,signals=[])
     
     def peek_newest_timestamp(self) -> int:
         return self.dataq[0].sender_timestamp

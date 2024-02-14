@@ -5,7 +5,7 @@
       "controller": {
         "type": "PID",
         "kp": 0.1,
-        "ki": 0.0002,
+        "ki": 0.001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,
@@ -32,7 +32,7 @@
       "controller": {
         "type": "PID",
         "kp": 0.1,
-        "ki": 0.0002,
+        "ki": 0.001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,
@@ -59,7 +59,7 @@
       "controller": {
         "type": "PID",
         "kp": 0.1,
-        "ki": 0.0002,
+        "ki": 0.001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,

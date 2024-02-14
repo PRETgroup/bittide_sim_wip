@@ -15,6 +15,8 @@ class Node:
     def __init__(self, name, buffers, initialFreq, server, outgoing_links):
         self.name = name
         self.controller = None
+        self.runtime_enforcer = None
+
         self.server = server
         self.initialFreq = initialFreq
         self.freq = initialFreq
@@ -27,6 +29,7 @@ class Node:
         self.current_delays = {}
         self.outgoing_links = outgoing_links
         self.backpressure_links = {}
+
         for outgoing_link in self.outgoing_links:
             target_link = self.outgoing_links[outgoing_link]
             self.backpressure_links[target_link.destNode] = 0
@@ -36,6 +39,9 @@ class Node:
     
     def set_controller(self,controller):
         self.controller = controller
+    
+    def set_runtime_enforcer(self, runtime_enforcer):
+        self.runtime_enforcer = runtime_enforcer
 
     def buffer_receive(self, index, value):
         try:         
@@ -52,8 +58,11 @@ class Node:
         if self.controller is None:
             print("Step attempted without an assigned controller! Exiting...")
             exit(0)
+
+        if self.runtime_enforcer is not None:
+            self.controller = self.runtime_enforcer.checkPolicies(self.controller)   
         controlResult = self.controller.step(self.buffers)
-        self.freq = self.initialFreq + controlResult.freq_correction
+        self.freq += controlResult.freq_correction
 
         if controlResult.do_tick:
             #telemetry###

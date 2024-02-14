@@ -1,9 +1,8 @@
 import json
 
 from Controllers.PIDControl import PIDController
-from Controllers.PID_FFP import PIDFFPController
 from Controllers.Reframer import Reframer
-from Controllers.TSBD import TSBD
+from Controllers.FFP import FFP
 from Node import Node
 from dataclasses import dataclass
 
@@ -66,18 +65,14 @@ def load_nodes_from_config(path, serv):
             
             controller_name = str(ctrl_opts["type"]).upper()
             if controller_name == "PID":
-                controller = PIDController(nj["id"], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), 
+                controller = PIDController(nj["id"], nodes[nj["id"]], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), 
                                            int(ctrl_opts["ki_window"]), float(ctrl_opts["kd"]), 
                                            int(ctrl_opts["diff_step"]), float(ctrl_opts["offset"]))
             elif controller_name == "REFRAMER":
-                controller = Reframer(nj["id"], float(ctrl_opts["kp"]),
+                controller = Reframer(nj["id"], nodes[nj["id"]], float(ctrl_opts["kp"]),
                                     float(ctrl_opts["settle_time"]),  float(ctrl_opts["settle_distance"]), float(ctrl_opts["wait_time"]))
-            elif controller_name == "TSBD":
-                controller = TSBD(nj["id"], nodes[nj["id"]])
-            elif controller_name == "PID_FFP":
-                controller = PIDFFPController(nj["id"], nodes[nj["id"]],float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), 
-                                           int(ctrl_opts["ki_window"]), float(ctrl_opts["kd"]), 
-                                           int(ctrl_opts["diff_step"]), float(ctrl_opts["offset"]))
+            elif controller_name == "FFP":
+                controller = FFP(nj["id"], nodes[nj["id"]])
             else:
                 print("Unknown control scheme " + str(ctrl_opts["type"]))
                 exit(0)

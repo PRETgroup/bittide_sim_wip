@@ -4,8 +4,8 @@ import numpy as np
 from collections import deque
 
 class PIDController(Controller.Controller):
-    def __init__(self, name, kp, ki, i_win, kd, d_step, offset):
-        super().__init__(name)
+    def __init__(self, name, node, kp, ki, i_win, kd, d_step, offset):
+        super().__init__(name, node)
         self.kp = kp
         self.ki = ki
         self.kd = kd
@@ -16,19 +16,19 @@ class PIDController(Controller.Controller):
         self.offset = offset
         self.last_c = 0
         self.prev_occ = -1
-        self.buffer_deadzone = 0
+        self.buffer_deadzone = 1
 
     def step(self,buffers) -> ControlResult:
         buffer_vals = []
         for buffer in buffers:
-            # if buffers[buffer].live == False:
-            #     return ControlResult(0, True)
             buffer_error = buffers[buffer].get_occupancy()- buffers[buffer].get_initial_occupancy()
             if (abs(buffer_error) <= self.buffer_deadzone): buffer_error = 0
             buffer_vals.append(buffer_error)
                 
         if (len(buffer_vals) > 0):
-            err = np.mean(buffer_vals)
+            occ = np.mean(buffer_vals)
+            err = occ - self.prev_occ
+            self.prev_occ = occ
             self.integral_window.append(err) #dt is always one
             self.integral += err
 

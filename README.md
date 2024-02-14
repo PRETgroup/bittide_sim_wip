@@ -8,7 +8,7 @@ To view control graphs without a state machine attached:
 
 `python3 System.py --conf arch.json`
 
-Included are three example config files, one for each of the PI, Reframing, and TSBD controllers with a three-node mesh topology.
+Included are three example config files, one for each of the PI, Reframing, and FFP controllers with a three-node mesh topology.
 
 To use the architecture creation tool:
 `python3 GraphMaker.py`

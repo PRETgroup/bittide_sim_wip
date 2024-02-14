@@ -3,7 +3,7 @@
     {
       "id": "n0",
       "controller": {
-        "type": "TSBD"
+        "type": "FFP"
       },
       "buffers": [
         {
@@ -19,7 +19,7 @@
     {
       "id": "n1",
       "controller": {
-        "type": "TSBD"
+        "type": "FFP"
       },
       "buffers": [
         {

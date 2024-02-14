@@ -1,6 +1,5 @@
 from collections import deque
 import random
-from BittideFrame import BittideFrame
 from ControlServer import ControlServer
 from progress.bar import IncrementalBar
 import argparse
@@ -55,21 +54,10 @@ if __name__ == "__main__":
 
     bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%') #progress bar
     delayGenerator = DelayGenerator(
-        jitter_size=0.0,jitter_frequency=0,spike_size=0,spike_width=0.0,spike_period=1,delay_size=2,delay_start=10000,delay_end=50000) #modelling various delay attacks
-    
-    # pre-fill links with in-flight frames
-    # the number in flight will be link length / sender timestep:
-    for node in nodes.values():
-        for outgoing_link in links[node.name]: #move output messages to outgoing link
-            link = links[node.name][outgoing_link]
-            num_in_flight = link.delay * nodes[link.sourceNode].freq
-            spacing = 1 / nodes[link.sourceNode].freq
-            for i in range(floor(num_in_flight)):
-                waiting_messages.append(WaitingMessage(link.sourceNode, link.destNode, spacing*(1+i), BittideFrame(sender_timestamp=-1,sender_phys_time=-1, signals=[])))
+        jitter_size=0.0,jitter_frequency=0,spike_size=0,spike_width=0.0,spike_period=1,delay_size=0,delay_start=0,delay_end=0) #modelling various delay attacks
     
     ################################################# main simulation loop
     while t <= end_t:
-
         # deliver in-flight messages to receiver
         while(len(waiting_messages) > 0 and waiting_messages[0].destTime <= t):
             message = waiting_messages[0]
@@ -96,8 +84,7 @@ if __name__ == "__main__":
                 for buffer in node.buffers: #transmit a backpressure message on reverse link (FFP)
                     for link in links[node.buffers[buffer].remoteNode]:
                         if links[node.buffers[buffer].remoteNode][link].destNode == node.name:
-                            backpressure_messages.append(BackPressureMessage(node.name,node.buffers[buffer].remoteNode, t + 
-                                                                             links[node.buffers[buffer].remoteNode][link].delay, node.phase))
+                            backpressure_messages.append(BackPressureMessage(node.name,node.buffers[buffer].remoteNode, t + links[node.buffers[buffer].remoteNode][link].delay, node.phase))
                             break
 
         # graph at a lower resolution than the simulation # 

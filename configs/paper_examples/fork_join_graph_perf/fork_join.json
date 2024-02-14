@@ -3,7 +3,7 @@
     {
       "id": "A",
       "controller": {
-        "type": "TSBD"
+        "type": "FFP"
       },
       "buffers": [
       ],
@@ -14,7 +14,7 @@
     {
       "id": "B",
       "controller": {
-        "type": "TSBD"
+        "type": "FFP"
       },
       "buffers": [
         {
@@ -30,7 +30,7 @@
     {
       "id": "C",
       "controller": {
-        "type": "TSBD"
+        "type": "FFP"
       },
       "buffers": [
         {
@@ -46,7 +46,7 @@
     {
       "id": "D",
       "controller": {
-        "type": "TSBD"
+        "type": "FFP"
       },
       "buffers": [
         {
