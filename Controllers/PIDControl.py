@@ -16,19 +16,17 @@ class PIDController(Controller.Controller):
         self.offset = offset
         self.last_c = 0
         self.prev_occ = -1
-        self.buffer_deadzone = 1
 
     def step(self,buffers) -> ControlResult:
         buffer_vals = []
         for buffer in buffers:
-            buffer_error = buffers[buffer].get_occupancy()- buffers[buffer].get_initial_occupancy()
-            if (abs(buffer_error) <= self.buffer_deadzone): buffer_error = 0
-            buffer_vals.append(buffer_error)
+            if buffers[buffer].live == True:
+                buffer_vals.append(buffers[buffer].get_occupancy())
                 
         if (len(buffer_vals) > 0):
             occ = np.mean(buffer_vals)
+            if (self.prev_occ == -1): self.prev_occ = occ
             err = occ - self.prev_occ
-            self.prev_occ = occ
             self.integral_window.append(err) #dt is always one
             self.integral += err
 
@@ -40,7 +38,7 @@ class PIDController(Controller.Controller):
             dterm = self.kd * (err - self.diff_window.popleft())/self.d_step
             self.diff_window.append(err)
             c =  pterm + iterm + dterm + self.offset
-
+            self.prev_occ = occ
         else: c = 0
         self.last_c = c
         
