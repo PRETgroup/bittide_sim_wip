@@ -34,8 +34,9 @@ class PIDFFP(RuntimeInterchage):
             if FFP.isEmpty(current_controller.node.buffers) \
                 or FFP.isFull(current_controller.node.outgoing_links, current_controller.node.backpressure_links, current_controller.node.phase):
                 print("Overflow/Underflow detected: Switching to FFP")
-                next_controller = FFP.FFP(current_controller.name, current_controller.node)
+                next_controller = self.required_controllers["FFP1"]
         elif current_controller.type == "FFP":
-            pass
+            if (not FFP.isEmpty(current_controller.node.buffers)) and (not FFP.isFull(current_controller.node.outgoing_links, current_controller.node.backpressure_links, current_controller.node.phase)):
+                next_controller = self.required_controllers["PID1"]
 
         return next_controller
