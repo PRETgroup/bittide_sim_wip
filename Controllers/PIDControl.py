@@ -5,7 +5,7 @@ from collections import deque
 
 class PIDController(Controller.Controller):
     def __init__(self, name, node, kp, ki, i_win, kd, d_step, offset):
-        super().__init__(name, node)
+        super().__init__(name, node, "PID")
         self.kp = kp
         self.ki = ki
         self.kd = kd

@@ -5,6 +5,8 @@ from collections import deque
 def isFull(outgoing_links, backpressure_links, phase):
     for outgoing_link in outgoing_links:
         target_link = outgoing_links[outgoing_link]
+
+        #only use the phase beginning when all bugfers are live?
         worst_case_occ = target_link.destInitialOcc - backpressure_links[target_link.destNode] + phase
         if (worst_case_occ >= target_link.destCapacity):
             return True
@@ -18,9 +20,9 @@ def isEmpty(buffers):
 
 class FFP(Controller.Controller):
     def __init__(self, name, node):
-        super().__init__(name, node)
-        for buffer in node.buffers:
-            node.buffers[buffer].live = True #FFP buffers should never have an inactive state\
+        super().__init__(name, node, "FFP")
+        # for buffer in node.buffers:
+        #     node.buffers[buffer].live = True #FFP buffers should never have an inactive state\
 
     def step(self,buffers) -> ControlResult:
          # check that all local buffers are not empty and remote are not full in the worst case

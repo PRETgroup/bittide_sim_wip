@@ -2,25 +2,29 @@
   "nodes": [
     {
       "id": "n0",
-      "controller": {
-        "type": "PID_FFP",
-        "kp": 0.3,
-        "ki": 0.0000,
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.002,
+        "ki": 0.000001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,
         "offset": 0.0
       },
+      {"name":"FFP1","type": "FFP"}],
       "buffers": [
         {
           "dst_label": "n1",
-          "capacity": 100,
-          "initial_occ": 50
+          "capacity": 1000,
+          "initial_occ": 500
         },
         {
           "dst_label": "n2",
-          "capacity": 100,
-          "initial_occ": 50
+          "capacity": 1000,
+          "initial_occ": 500
         }
       ],
       "frequency": 200.0,
@@ -29,25 +33,29 @@
     },
     {
       "id": "n1",
-      "controller": {
-        "type": "PID_FFP",
-        "kp": 0.3,
-        "ki": 0.0000,
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.002,
+        "ki": 0.000001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,
         "offset": 0.0
       },
+      {"name":"FFP1","type": "FFP"}],
       "buffers": [
         {
           "dst_label": "n0",
-          "capacity": 100,
-          "initial_occ": 50
+          "capacity": 1000,
+          "initial_occ": 500
         },
         {
           "dst_label": "n2",
-          "capacity": 100,
-          "initial_occ": 50
+          "capacity": 1000,
+          "initial_occ": 500
         }
       ],
       "frequency": 185.0,
@@ -56,25 +64,29 @@
     },
     {
       "id": "n2",
-      "controller": {
-        "type": "PID_FFP",
-        "kp": 0.3,
-        "ki": 0.0000,
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.002,
+        "ki": 0.000001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,
         "offset": 0.0
       },
+      {"name":"FFP1","type": "FFP"}],
       "buffers": [
         {
           "dst_label": "n1",
-          "capacity": 100,
-          "initial_occ": 50
+          "capacity": 1000,
+          "initial_occ": 500
         },
         {
           "dst_label": "n0",
-          "capacity": 100,
-          "initial_occ": 50
+          "capacity": 1000,
+          "initial_occ": 500
         }
       ],
       "frequency": 192.0,
@@ -90,13 +102,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 0,
-          "delay": 0.0
+          "delay": 0.05
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n2",
           "dest_buffer_id": 1,
-          "delay": 0.0
+          "delay": 0.05
         }
       ]
     },
@@ -107,13 +119,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n0",
           "dest_buffer_id": 0,
-          "delay": 0.0
+          "delay": 0.05
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n2",
           "dest_buffer_id": 0,
-          "delay": 0.0
+          "delay": 0.05
         }
       ]
     },
@@ -124,13 +136,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 1,
-          "delay": 0.0
+          "delay": 0.05
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n0",
           "dest_buffer_id": 1,
-          "delay": 0.0
+          "delay": 0.05
         }
       ]
     }

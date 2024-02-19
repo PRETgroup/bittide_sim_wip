@@ -6,9 +6,10 @@ class ControlResult:
     do_tick : bool
 
 class Controller:
-    def __init__(self, name, node):
+    def __init__(self, name, node, type):
         self.name = name
         self.node = node
+        self.type = type
     
     def step(self, buffers) -> ControlResult :
         return ControlResult

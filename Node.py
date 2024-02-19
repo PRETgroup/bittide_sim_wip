@@ -15,17 +15,21 @@ class Node:
     def __init__(self, name, buffers, initialFreq, server, outgoing_links):
         self.name = name
         self.controller = None
-        self.runtime_enforcer = None
+        self.runtime_interchanger = None
 
         self.server = server
         self.initialFreq = initialFreq
         self.freq = initialFreq
         self.phase = 0
+
+        # data collection
         self.last_step_time = 0
         self.last_jitter = 0
         self.last_period = 0
         self.lastWasSkip = False
-        self.buffers = {}
+        #
+
+        
         self.current_delays = {}
         self.outgoing_links = outgoing_links
         self.backpressure_links = {}
@@ -33,18 +37,23 @@ class Node:
         for outgoing_link in self.outgoing_links:
             target_link = self.outgoing_links[outgoing_link]
             self.backpressure_links[target_link.destNode] = 0
+        self.buffers = {}
+        self.inactive_buffers = 0
         for buffer in buffers:
-            self.buffers[buffer.remoteNode] = (Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode, server)) #FIXME: make this mapped to label rather than index
+            self.inactive_buffers += 1
+            self.buffers[buffer.remoteNode] = (Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode, server))
             self.current_delays[(name, buffer.remoteNode)] = 0
     
     def set_controller(self,controller):
         self.controller = controller
     
-    def set_runtime_enforcer(self, runtime_enforcer):
-        self.runtime_enforcer = runtime_enforcer
+    def set_runtime_interchanger(self, runtime_interchanger):
+        self.runtime_interchanger = runtime_interchanger
 
     def buffer_receive(self, index, value):
         try:         
+            if not self.buffers[index].live:
+                self.inactive_buffers -= 1
             self.buffers[index].receive(value)
         except:
             print("No inbound buffer with index " + str(index) + " at node " + self.name)
@@ -59,8 +68,8 @@ class Node:
             print("Step attempted without an assigned controller! Exiting...")
             exit(0)
 
-        if self.runtime_enforcer is not None:
-            self.controller = self.runtime_enforcer.checkPolicies(self.controller)   
+        if self.runtime_interchanger is not None:
+            self.controller = self.runtime_interchanger.checkPolicies(self.controller)  
         controlResult = self.controller.step(self.buffers)
         self.freq += controlResult.freq_correction
 
@@ -71,8 +80,8 @@ class Node:
             self.last_period = recent_period
             self.last_step_time = steptime
             #############
-
-            self.phase += 1
+            if self.inactive_buffers == 0:
+                self.phase += 1
             if (self.freq < 0.01): self.freq = 0.01 #cap negative frequencies to prevent negative time deltas
             
             all_inputs_to_fsm = []
@@ -81,6 +90,7 @@ class Node:
                 inboundBuff : BittideFrame = self.buffers[buffer].pop()
                 if inboundBuff.sender_timestamp != -1:
                     self.current_delays[self.buffers[buffer].getId()] = self.phase - inboundBuff.sender_timestamp
+                    # print(self.name + "->" + buffer + ", " + str(self.phase - inboundBuff.sender_timestamp))
                 else: self.current_delays[self.buffers[buffer].getId()] = 0
                 all_inputs_to_fsm.extend(inboundBuff.signals)
                 self.buffers[buffer].add_latency_measurement(steptime-inboundBuff.sender_phys_time)
