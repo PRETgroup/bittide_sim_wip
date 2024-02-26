@@ -6,12 +6,16 @@ class ControllerInstance:
     instance: Controller
     suspended : bool
     priority : int
+
+class InterchangePolicy():
+    def check_violations(node) : bool
     
 class RuntimeInterchage:
     def __init__(self, name, controllers : dict):
         self.name = name
         #specify the controllers which the config must load
         self.controllers = controllers
+        self.previous_controller = None
 
         self.all_controllers_loaded = False
         self.num_loaded_controllers = 0
@@ -46,12 +50,17 @@ class RuntimeInterchage:
             if self.controllers[choice].priority > highest_priority:
                 current_selection = choice
                 highest_priority = self.controllers[choice].priority
+        self.previous_controller = current_selection
         return current_selection
+    
+    def on_controller_selected(self, selected_controller, node): #no default behaviour, for interchange
+        return
     
     def step(self, node) -> float:
         next_controller = self.choose_controller(node)
+        self.on_controller_selected(next_controller, node)
         chosen_output = None
-
+        
         # do a step on all non-suspended controllers, returning only the chosen controller
         for controller in self.controllers:
             if self.controllers[controller].suspended == False:
@@ -63,5 +72,4 @@ class RuntimeInterchage:
         if chosen_output is None:
             print("Error: No valid policy for control")
             exit(0)
-
         return chosen_output

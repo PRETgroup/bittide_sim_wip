@@ -2,13 +2,27 @@
   "nodes": [
     {
       "id": "n0",
-      "controller": {
-        "type": "REFRAMER",
-        "kp": 0.1,
-        "settle_time" : 2000,
-        "wait_time" : 16000,
-        "settle_distance" : 0
+      "interchange": "ROBUST",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.15,
+        "ki": 0.0000,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
       },
+      {"name":"FFP1","type": "FFP"},
+      {
+        "name": "REFRAMER1",
+        "type": "INTERCHANGEREFRAMER",
+        "kp": 0.15,
+        "settle_time" : 20000,
+        "wait_time" : 0,
+        "settle_distance" : 0.05
+      }],
       "buffers": [
         {
           "dst_label": "n1",
@@ -21,19 +35,33 @@
           "initial_occ": 500
         }
       ],
-      "frequency": 190.0,
+      "frequency": 200.0,
       "meta_x": 166,
       "meta_y": 175
     },
     {
       "id": "n1",
-      "controller": {
-        "type": "REFRAMER",
-        "kp": 0.1,
-        "settle_time" : 2000,
-        "wait_time" : 16000,
-        "settle_distance" : 0
+      "interchange": "ROBUST",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.15,
+        "ki": 0.0000,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
       },
+      {"name":"FFP1","type": "FFP"},
+      {
+        "name": "REFRAMER1",
+        "type": "INTERCHANGEREFRAMER",
+        "kp": 0.15,
+        "settle_time" : 20000,
+        "wait_time" : 0,
+        "settle_distance" : 0.05
+      }],
       "buffers": [
         {
           "dst_label": "n0",
@@ -52,13 +80,27 @@
     },
     {
       "id": "n2",
-      "controller": {
-        "type": "REFRAMER",
-        "kp": 0.1,
-        "settle_time" : 2000,
-        "wait_time" : 16000,
-        "settle_distance" : 0
+      "interchange": "ROBUST",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.15,
+        "ki": 0.0000,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
       },
+      {"name":"FFP1","type": "FFP"},
+      {
+        "name": "REFRAMER1",
+        "type": "INTERCHANGEREFRAMER",
+        "kp": 0.15,
+        "settle_time" : 20000,
+        "wait_time" : 0,
+        "settle_distance" : 0.05
+      }],
       "buffers": [
         {
           "dst_label": "n1",
@@ -71,7 +113,7 @@
           "initial_occ": 500
         }
       ],
-      "frequency": 189.0,
+      "frequency": 195.0,
       "meta_x": 427,
       "meta_y": 173
     }
@@ -84,13 +126,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 0,
-          "delay": 5
+          "delay": 0.1
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n2",
           "dest_buffer_id": 1,
-          "delay": 5
+          "delay": 0.1
         }
       ]
     },
@@ -101,13 +143,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n0",
           "dest_buffer_id": 0,
-          "delay": 5
+          "delay": 0.1
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n2",
           "dest_buffer_id": 0,
-          "delay": 5
+          "delay": 0.1
         }
       ]
     },
@@ -118,13 +160,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 1,
-          "delay": 5
+          "delay": 0.1
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n0",
           "dest_buffer_id": 1,
-          "delay": 5
+          "delay": 0.1
         }
       ]
     }

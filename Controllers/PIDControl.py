@@ -28,7 +28,7 @@ class PIDController(Controller.Controller):
             if (self.prev_occ == -1): self.prev_occ = occ
             err = occ - self.prev_occ
             self.integral_window.append(err) #dt is always one
-            self.integral += err
+            self.integral = occ - 50
 
             pterm = self.kp * err
             if (len(self.integral_window) > 0):

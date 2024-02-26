@@ -1,3 +1,4 @@
+import numpy as np
 from Buffer import Buffer
 from BittideFrame import BittideFrame
 
@@ -143,5 +144,20 @@ class Node:
         occupancies = []
         for buffer in self.buffers:
             occupancies.append(self.buffers[buffer].get_occupancy_as_percent())
-        
         return occupancies
+    
+    def get_average_occupancy(self):
+        buffer_vals = []
+        for buffer in self.buffers:
+            if self.buffers[buffer].running == True:
+                buffer_vals.append(self.buffers[buffer].get_occupancy())
+        if len(buffer_vals) == 0: return None
+        else: return np.mean(buffer_vals)
+
+    def get_average_occupancy_as_percent(self):
+        buffer_vals = []
+        for buffer in self.buffers:
+            if self.buffers[buffer].running == True:
+                buffer_vals.append(self.buffers[buffer].get_occupancy_as_percent())
+        if len(buffer_vals) == 0: return None
+        else: return np.mean(buffer_vals)

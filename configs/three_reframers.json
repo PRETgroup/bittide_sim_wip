@@ -4,7 +4,7 @@
       "id": "n0",
       "controller": {
         "type": "REFRAMER",
-        "kp": 0.03,
+        "kp": 0.1,
         "settle_time" : 2000,
         "wait_time" : 16000,
         "settle_distance" : 0
@@ -29,7 +29,7 @@
       "id": "n1",
       "controller": {
         "type": "REFRAMER",
-        "kp": 0.03,
+        "kp": 0.1,
         "settle_time" : 2000,
         "wait_time" : 16000,
         "settle_distance" : 0
@@ -54,7 +54,7 @@
       "id": "n2",
       "controller": {
         "type": "REFRAMER",
-        "kp": 0.03,
+        "kp": 0.1,
         "settle_time" : 2000,
         "wait_time" : 16000,
         "settle_distance" : 0

@@ -44,7 +44,7 @@ class Plotter:
         plt.title("Frequency")
         plt.ylabel("Hz")
         plt.plot(self.timesteps, self.node_frequencies, label=self.node_labels)
-        plt.ylim([self.slowest_freq/1.1,self.fastest_freq*1.1])
+        plt.ylim([self.slowest_freq/1.01,self.fastest_freq*1.01])
         plt.legend(loc='best')
         plt.subplot(2, 1, 2)
         plt.title("Buffer Occupancies")

@@ -1,11 +1,12 @@
 import json
-
+from Controllers.TriggeredReframer import TriggeredReframer
 from Controllers.PIDControl import PIDController
 from Controllers.Reframer import Reframer
 from Controllers.FFP import FFP
 from Node import Node
 from dataclasses import dataclass
 from Interchangers import PIDFFP
+from Interchangers import ReframingInterchanger
 from Controllers.Lag import LagController
 
 @dataclass
@@ -31,6 +32,9 @@ def form_controller_from_config(ctrl_opts, nodes, nj):
                                 int(ctrl_opts["diff_step"]), float(ctrl_opts["offset"]))
     elif controller_type == "REFRAMER":
         controller = Reframer(nj["id"], nodes[nj["id"]], float(ctrl_opts["kp"]),
+                            float(ctrl_opts["settle_time"]),  float(ctrl_opts["settle_distance"]), float(ctrl_opts["wait_time"]))
+    elif controller_type == "INTERCHANGEREFRAMER":
+        controller = TriggeredReframer(nj["id"], nodes[nj["id"]], float(ctrl_opts["kp"]),
                             float(ctrl_opts["settle_time"]),  float(ctrl_opts["settle_distance"]), float(ctrl_opts["wait_time"]))
     elif controller_type == "FFP":
         controller = FFP(nj["id"], nodes[nj["id"]])
@@ -93,11 +97,12 @@ def load_nodes_from_config(path, serv):
                 interchange_type = nj["interchange"]
                 if (str(interchange_type).upper() == "PIDFFP"):
                     interchanger = PIDFFP.PIDFFP("PIDFFP")
-                    nodes[nj["id"]].set_runtime_interchanger(interchanger)
+                elif (str(interchange_type).upper() == "ROBUST"):
+                    interchanger = ReframingInterchanger.REFRAMING_INTERCHANGER("ROBUST")
                 else:
                     print("Unknown interchanger scheme " + interchange_type)
                     exit(0)
-
+                nodes[nj["id"]].set_runtime_interchanger(interchanger)
                 controllers_cfg = nj["controller_bank"]
                 for controller_cfg in controllers_cfg:
                     controller = form_controller_from_config(controller_cfg, nodes, nj)
