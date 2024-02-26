@@ -6,6 +6,7 @@ from Controllers.FFP import FFP
 from Node import Node
 from dataclasses import dataclass
 from Interchangers import PIDFFP
+from Controllers.Lag import LagController
 
 @dataclass
 class BufferSettings:
@@ -33,6 +34,11 @@ def form_controller_from_config(ctrl_opts, nodes, nj):
                             float(ctrl_opts["settle_time"]),  float(ctrl_opts["settle_distance"]), float(ctrl_opts["wait_time"]))
     elif controller_type == "FFP":
         controller = FFP(nj["id"], nodes[nj["id"]])
+    elif controller_type == "LAG":
+        controller = LagController(nj["id"], nodes[nj["id"]], float(ctrl_opts["kp"]), float(ctrl_opts["ki"]), 
+                                float(ctrl_opts["kd"]),float(ctrl_opts["lag_kp"]),float(ctrl_opts["lag_td"]),
+                                float(ctrl_opts["lead_kp"]),float(ctrl_opts["lead_td"]))
+
     else:
         print("Unknown control scheme " + str(ctrl_opts["type"]))
         exit(0)
@@ -97,8 +103,6 @@ def load_nodes_from_config(path, serv):
                     controller = form_controller_from_config(controller_cfg, nodes, nj)
                     controller_name = controller_cfg["name"]
                     interchanger.register_controller(controller_name, controller)
-                    if interchanger.num_loaded_controllers == 1:
-                        nodes[nj["id"]].set_controller(controller)
             elif "controller" in nj:
                 ctrl_opts = nj["controller"]
                 controller = form_controller_from_config(ctrl_opts, nodes, nj)

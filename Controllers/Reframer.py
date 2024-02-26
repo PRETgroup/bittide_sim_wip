@@ -14,7 +14,7 @@ class Phase(Enum):
 
 class Reframer(Controller.Controller):
     def __init__(self, name, node, kp : float, settle_time : float, settle_distance : float, wait_time : float):
-        super().__init__(name, node)
+        super().__init__(name, node,"REFRAMER")
         self.kp = kp
         self.settle_time = settle_time
         self.settle_distance = settle_distance

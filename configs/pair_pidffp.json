@@ -1,0 +1,80 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.005,
+        "ki": 0.000001,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
+      },
+      {"name":"FFP1","type": "FFP"}],
+      "buffers": [
+        {
+          "dst_label": "n1",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 200.0,
+      "meta_x": 166,
+      "meta_y": 175
+    },
+    {
+      "id": "n1",
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.005,
+        "ki": 0.000001,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
+      },
+      {"name":"FFP1","type": "FFP"}],
+      "buffers": [
+        {
+          "dst_label": "n0",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 185.0,
+      "meta_x": 288,
+      "meta_y": 387
+    }
+  ],
+  "links": [
+    {
+      "source_id": "n0",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n1",
+          "dest_buffer_id": 0,
+          "delay": 0.5
+        }
+      ]
+    },
+    {
+      "source_id": "n1",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n0",
+          "dest_buffer_id": 0,
+          "delay": 0.5
+        }
+      ]
+    }
+  ]
+}

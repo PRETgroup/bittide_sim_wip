@@ -21,8 +21,6 @@ def isEmpty(buffers):
 class FFP(Controller.Controller):
     def __init__(self, name, node):
         super().__init__(name, node, "FFP")
-        # for buffer in node.buffers:
-        #     node.buffers[buffer].live = True #FFP buffers should never have an inactive state\
 
     def step(self,buffers) -> ControlResult:
          # check that all local buffers are not empty and remote are not full in the worst case

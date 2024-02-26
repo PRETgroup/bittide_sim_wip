@@ -1,0 +1,390 @@
+{
+  "nodes": [
+    {
+      "id": "n0",
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.01,
+        "ki": 0.000001,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
+      },
+      {"name":"FFP1","type": "FFP"}],
+      "buffers": [
+        {
+          "dst_label": "n1",
+          "capacity": 1000,
+          "initial_occ": 500
+        },
+        {
+          "dst_label": "n7",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 200,
+      "meta_x": 142,
+      "meta_y": 187
+    },
+    {
+      "id": "n1",
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.01,
+        "ki": 0.000001,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
+      },
+      {"name":"FFP1","type": "FFP"}],
+      "buffers": [
+        {
+          "dst_label": "n0",
+          "capacity": 1000,
+          "initial_occ": 500
+        },
+        {
+          "dst_label": "n2",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 190,
+      "meta_x": 141,
+      "meta_y": 302
+    },
+    {
+      "id": "n2",
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.01,
+        "ki": 0.000001,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
+      },
+      {"name":"FFP1","type": "FFP"}],
+      "buffers": [
+        {
+          "dst_label": "n1",
+          "capacity": 1000,
+          "initial_occ": 500
+        },
+        {
+          "dst_label": "n3",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 180,
+      "meta_x": 202,
+      "meta_y": 403
+    },
+    {
+      "id": "n3",
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.01,
+        "ki": 0.000001,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
+      },
+      {"name":"FFP1","type": "FFP"}],
+      "buffers": [
+        {
+          "dst_label": "n2",
+          "capacity": 1000,
+          "initial_occ": 500
+        },
+        {
+          "dst_label": "n4",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 195,
+      "meta_x": 364,
+      "meta_y": 406
+    },
+    {
+      "id": "n4",
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.01,
+        "ki": 0.000001,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
+      },
+      {"name":"FFP1","type": "FFP"}],
+      "buffers": [
+        {
+          "dst_label": "n3",
+          "capacity": 1000,
+          "initial_occ": 500
+        },
+        {
+          "dst_label": "n5",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 185,
+      "meta_x": 443,
+      "meta_y": 306
+    },
+    {
+      "id": "n5",
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.01,
+        "ki": 0.000001,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
+      },
+      {"name":"FFP1","type": "FFP"}],
+      "buffers": [
+        {
+          "dst_label": "n4",
+          "capacity": 1000,
+          "initial_occ": 500
+        },
+        {
+          "dst_label": "n6",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 175,
+      "meta_x": 440,
+      "meta_y": 181
+    },
+    {
+      "id": "n6",
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.01,
+        "ki": 0.000001,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
+      },
+      {"name":"FFP1","type": "FFP"}],
+      "buffers": [
+        {
+          "dst_label": "n5",
+          "capacity": 1000,
+          "initial_occ": 500
+        },
+        {
+          "dst_label": "n7",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 195,
+      "meta_x": 361,
+      "meta_y": 89
+    },
+    {
+      "id": "n7",
+      "interchange": "PIDFFP",
+      "controller_bank":
+      [ {
+        "name": "PID1",
+        "type": "PID",
+        "kp": 0.01,
+        "ki": 0.000001,
+        "ki_window": 0,
+        "kd": 0.0,
+        "diff_step": 1,
+        "offset": 0.0
+      },
+      {"name":"FFP1","type": "FFP"}],
+      "buffers": [
+        {
+          "dst_label": "n6",
+          "capacity": 1000,
+          "initial_occ": 500
+        },
+        {
+          "dst_label": "n0",
+          "capacity": 1000,
+          "initial_occ": 500
+        }
+      ],
+      "frequency": 178,
+      "meta_x": 235,
+      "meta_y": 86
+    }
+  ],
+  "links": [
+    {
+      "source_id": "n0",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n1",
+          "dest_buffer_id": 0,
+          "delay": 0.5
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n7",
+          "dest_buffer_id": 1,
+          "delay": 0.5
+        }
+      ]
+    },
+    {
+      "source_id": "n1",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n0",
+          "dest_buffer_id": 0,
+          "delay": 0.5
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n2",
+          "dest_buffer_id": 0,
+          "delay": 0.5
+        }
+      ]
+    },
+    {
+      "source_id": "n2",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n1",
+          "dest_buffer_id": 1,
+          "delay": 0.5
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n3",
+          "dest_buffer_id": 0,
+          "delay": 0.5
+        }
+      ]
+    },
+    {
+      "source_id": "n3",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n2",
+          "dest_buffer_id": 1,
+          "delay": 0.5
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n4",
+          "dest_buffer_id": 0,
+          "delay": 0.5
+        }
+      ]
+    },
+    {
+      "source_id": "n4",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n3",
+          "dest_buffer_id": 1,
+          "delay": 0.5
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n5",
+          "dest_buffer_id": 0,
+          "delay": 0.5
+        }
+      ]
+    },
+    {
+      "source_id": "n5",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n4",
+          "dest_buffer_id": 1,
+          "delay": 0.5
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n6",
+          "dest_buffer_id": 0,
+          "delay": 0.5
+        }
+      ]
+    },
+    {
+      "source_id": "n6",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n5",
+          "dest_buffer_id": 1,
+          "delay": 0.5
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n7",
+          "dest_buffer_id": 0,
+          "delay": 0.5
+        }
+      ]
+    },
+    {
+      "source_id": "n7",
+      "destinations": [
+        {
+          "source_buffer_id": 0,
+          "dest_node_id": "n6",
+          "dest_buffer_id": 1,
+          "delay": 0.5
+        },
+        {
+          "source_buffer_id": 1,
+          "dest_node_id": "n0",
+          "dest_buffer_id": 1,
+          "delay": 0.5
+        }
+      ]
+    }
+  ]
+}

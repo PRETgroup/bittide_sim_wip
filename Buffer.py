@@ -5,6 +5,7 @@ class Buffer:
     def __init__(self, size, initialOcc, localNode, remoteNode, server):
         self.size = size
         self.live = False
+        self.running = False
         self.dataq = deque(maxlen=size)
         self.initialOcc = initialOcc
         self.server = server
@@ -20,10 +21,11 @@ class Buffer:
     
     def receive(self, frame : BittideFrame):
         self.live = True
-        self.dataq.appendleft(frame)
+        if self.running:
+            self.dataq.appendleft(frame)
     
     def pop(self) -> BittideFrame:
-        if self.live:
+        if self.running:
             return self.dataq.pop()
         else: return BittideFrame(sender_timestamp=-1, sender_phys_time=-1,signals=[])
     

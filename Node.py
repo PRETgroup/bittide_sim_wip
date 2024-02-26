@@ -39,6 +39,7 @@ class Node:
             self.backpressure_links[target_link.destNode] = 0
         self.buffers = {}
         self.inactive_buffers = 0
+        self.node_enabled = False
         for buffer in buffers:
             self.inactive_buffers += 1
             self.buffers[buffer.remoteNode] = (Buffer(buffer.size, buffer.initialOcc, name, buffer.remoteNode, server))
@@ -54,6 +55,11 @@ class Node:
         try:         
             if not self.buffers[index].live:
                 self.inactive_buffers -= 1
+
+            if not self.node_enabled and self.inactive_buffers == 0:
+                self.node_enabled = True
+                for buffer in self.buffers:
+                    self.buffers[buffer].running = True
             self.buffers[index].receive(value)
         except:
             print("No inbound buffer with index " + str(index) + " at node " + self.name)
@@ -64,13 +70,13 @@ class Node:
         
     def step(self, steptime):
         # print(self.name)
-        if self.controller is None:
+        if (self.controller is None) and (self.runtime_interchanger is None):
             print("Step attempted without an assigned controller! Exiting...")
             exit(0)
 
         if self.runtime_interchanger is not None:
-            self.controller = self.runtime_interchanger.checkPolicies(self.controller)  
-        controlResult = self.controller.step(self.buffers)
+            controlResult = self.runtime_interchanger.step(self)
+        else: controlResult = self.controller.step(self.buffers)
         self.freq += controlResult.freq_correction
 
         if controlResult.do_tick:
@@ -80,7 +86,7 @@ class Node:
             self.last_period = recent_period
             self.last_step_time = steptime
             #############
-            if self.inactive_buffers == 0:
+            if self.node_enabled:
                 self.phase += 1
             if (self.freq < 0.01): self.freq = 0.01 #cap negative frequencies to prevent negative time deltas
             
@@ -113,9 +119,6 @@ class Node:
         if self.lastWasSkip:
             return 0
         return self.freq
-    
-    def get_control_value(self):
-        return self.controller.get_control()
     
     def get_logical_delays(self):
         delays = []

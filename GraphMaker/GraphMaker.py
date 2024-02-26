@@ -1,6 +1,7 @@
-from cProfile import label
+
 from enum import Enum
-from platform import node
+import sys
+sys.path.append("..")
 from ParseConfig import load_nodes_from_config
 import PySimpleGUI as sg
 import json

@@ -1,3 +1,4 @@
+from cmath import inf
 from collections import deque
 import random
 from ControlServer import ControlServer
@@ -31,13 +32,16 @@ if __name__ == "__main__":
     t = 0.0
     next_steps = {}
     fastest_node_freq = 0
+    slowest_node_freq = inf
     for node in nodes:
         next_steps[node] = 1 / nodes[node].freq
         if nodes[node].freq > fastest_node_freq:
             fastest_node_freq = nodes[node].freq
+        if nodes[node].freq < slowest_node_freq:
+            slowest_node_freq = nodes[node].freq
 
     if graph_step == -1: #infer a default graph step from node frequencies (2.1x the fastest node)
-        graph_step = 1 / (2.1 * fastest_node_freq)
+        graph_step = 1 / (2.0 * fastest_node_freq)
 
     if end_t == -1: #infer a default duration from node frequencies
         end_t = 40000 / fastest_node_freq
@@ -46,7 +50,7 @@ if __name__ == "__main__":
     waiting_messages = deque()
     backpressure_messages = [] # only used for modelling FFP isFull behaviours
 
-    plotter = Plotter(nodes, links)
+    plotter = Plotter(nodes, links, fastest_node_freq, slowest_node_freq)
     next_graph = 0.0 # datapoint plotting timer
 
     if serv is not None: # await networked SCChart, if enabled
