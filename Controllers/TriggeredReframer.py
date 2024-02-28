@@ -41,6 +41,7 @@ class TriggeredReframer(Controller.Controller):
                 self.wait_t += 1
                 if self.wait_t >= self.wait_max:
                     self.phase = IntReframerPhase.REFRAMING
+                    self.integral = occ - 50
                     self.correction_value = self.kp * self.integral 
                     self.settle_count = 0
                     print("\nEntering reframing phase.")

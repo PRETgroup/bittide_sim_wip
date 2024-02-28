@@ -1,6 +1,12 @@
+from enum import Enum
 import matplotlib.pyplot as plt
 class Plotter:
+    class PlotType(Enum):
+        FullSize = 1
+        Compact = 2
+
     def __init__(self, nodes, links, fastest_freq, slowest_freq):
+        self.mode = self.PlotType.FullSize
         self.nodes = nodes
         self.links = links
         self.fastest_freq = fastest_freq
@@ -39,24 +45,29 @@ class Plotter:
         self.buffer_latencies.append(step_latencies)
         self.logical_delay.append(step_delays)
     def render(self):
-        plt.figure(figsize=(4, 2), dpi=160)
-        plt.subplot(2, 1, 1)
-        plt.title("Frequency")
-        plt.ylabel("Hz")
-        plt.plot(self.timesteps, self.node_frequencies, label=self.node_labels)
-        plt.ylim([self.slowest_freq/1.01,self.fastest_freq*1.01])
-        plt.legend(loc='best')
-        plt.subplot(2, 1, 2)
-        plt.title("Buffer Occupancies")
 
-        tnrfont = {'fontname':'Times New Roman'}
+        if self.mode == self.PlotType.FullSize:
+            plt.figure(figsize=(4, 2), dpi=160)
+            plt.subplot(2, 1, 1)
+            plt.title("Frequency")
+            plt.ylabel("Hz")
+            plt.plot(self.timesteps, self.node_frequencies, label=self.node_labels)
+            plt.ylim([self.slowest_freq/1.01,self.fastest_freq*1.01])
+            plt.legend(loc='best')
+            plt.subplot(2, 1, 2)
+            plt.title("Buffer Occupancies")
 
-        plt.ylabel("Percent Occ. ")
-        plt.xlabel("firing count")
-        plt.plot(self.timesteps, self.buffer_occupancies, label=self.buffer_labels,alpha=0.7)
-        plt.ylim([0,100])
-        plt.xticks(fontproperties='Times New Roman', size=10)
-        plt.yticks(fontproperties='Times New Roman', size=10)
-        plt.legend(fontsize=8,loc='lower right',ncol=2, frameon=False, borderpad=0,labelspacing=0)
+            tnrfont = {'fontname':'Times New Roman'}
+
+            plt.ylabel("Percent Occ. ")
+            plt.xlabel("firing count")
+            plt.plot(self.timesteps, self.buffer_occupancies, label=self.buffer_labels,alpha=0.7)
+            plt.ylim([0,100])
+            plt.xticks(fontproperties='Times New Roman', size=10)
+            plt.yticks(fontproperties='Times New Roman', size=10)
+            plt.legend(fontsize=8,loc='lower right',ncol=2, frameon=False, borderpad=0,labelspacing=0)
+        elif self.mode == self.PlotType.Compact:
+            #render freq and occ in separate windows
+            pass
 
         plt.show()

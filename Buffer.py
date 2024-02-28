@@ -26,7 +26,10 @@ class Buffer:
     
     def pop(self) -> BittideFrame:
         if self.running:
-            return self.dataq.pop()
+            if len(self.dataq) != 0:
+                return self.dataq.pop()
+            else:
+                return None
         else: return BittideFrame(sender_timestamp=-1, sender_phys_time=-1,signals=[])
     
     def peek_newest_timestamp(self) -> int:

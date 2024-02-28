@@ -95,6 +95,8 @@ class Node:
             #first during a tick, we provide the local (networked) machine with some inputs from the head of our buffer
             for buffer in self.buffers:
                 inboundBuff : BittideFrame = self.buffers[buffer].pop()
+                if inboundBuff is None: #system crash
+                    return None
                 if inboundBuff.sender_timestamp != -1:
                     self.current_delays[self.buffers[buffer].getId()] = self.phase - inboundBuff.sender_timestamp
                     # print(self.name + "->" + buffer + ", " + str(self.phase - inboundBuff.sender_timestamp))

@@ -30,6 +30,7 @@ class SteadyStateErrorPolicy(InterchangePolicy):
         self.sliding_window = deque(maxlen=5) 
     def check_violations(self, node, reframer):
         violation = False
+        if self.state == self.States.TIMER_EXPIRED: return violation
         occ = node.get_average_occupancy_as_percent()
         if self.prev_occ is not None and (abs(occ-50) > 1):
             #if our buffer occupancy is not changing, it's a good time to do a reframing
@@ -90,7 +91,7 @@ class REFRAMING_INTERCHANGER(RuntimeInterchage):
         self.controllers[selected_controller].suspended = False
 
         if selected_controller == "REFRAMER1":
-            self.controllers["REFRAMER1"].instance.integral = self.controllers["FFP1"].instance.get_hypothetical_occupancy_as_percent(node.buffers) - 50
+            #self.controllers["REFRAMER1"].instance.integral = FFP.get_hypothetical_occupancy_as_percent(node.buffers,self.controllers["FFP1"].instance.num_tokens_blocked) - 50
             self.controllers["REFRAMER1"].suspended = False
             self.controllers["PID1"].suspended = True
         elif selected_controller == "FFP1":

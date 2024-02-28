@@ -19,7 +19,7 @@
         "name": "REFRAMER1",
         "type": "INTERCHANGEREFRAMER",
         "kp": 0.15,
-        "settle_time" : 20000,
+        "settle_time" : 45000,
         "wait_time" : 0,
         "settle_distance" : 0.05
       }],
@@ -58,7 +58,7 @@
         "name": "REFRAMER1",
         "type": "INTERCHANGEREFRAMER",
         "kp": 0.15,
-        "settle_time" : 20000,
+        "settle_time" : 45000,
         "wait_time" : 0,
         "settle_distance" : 0.05
       }],
@@ -97,7 +97,7 @@
         "name": "REFRAMER1",
         "type": "INTERCHANGEREFRAMER",
         "kp": 0.15,
-        "settle_time" : 20000,
+        "settle_time" : 45000,
         "wait_time" : 0,
         "settle_distance" : 0.05
       }],

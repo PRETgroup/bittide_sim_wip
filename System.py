@@ -30,6 +30,7 @@ if __name__ == "__main__":
     nodes, links = load_nodes_from_config(args.conf, serv)
 
     t = 0.0
+    crash = False
     next_steps = {}
     fastest_node_freq = 0
     slowest_node_freq = inf
@@ -61,7 +62,7 @@ if __name__ == "__main__":
         jitter_size=0.0,jitter_frequency=0,spike_size=0,spike_width=0.0,spike_period=1,delay_size=0,delay_start=0,delay_end=0) #modelling various delay attacks
     
     ################################################# main simulation loop
-    while t <= end_t:
+    while t <= end_t and not crash:
         # deliver in-flight messages to receiver
         while(len(waiting_messages) > 0 and waiting_messages[0].destTime <= t):
             message = waiting_messages[0]
@@ -78,6 +79,10 @@ if __name__ == "__main__":
         for node in nodes.values():
             if next_steps[node.name] <= t: #check if tick deadline has expired
                 out = node.step(t) #run simulation tick
+                if out is None:
+                    print("Node " + node.name + " crash at " + str(t))
+                    crash = True
+                    break
                 next_steps[node.name] += out.nextStep #update next tick deadline
                 
                 for outgoing_link in links[node.name]: #move output messages to outgoing links

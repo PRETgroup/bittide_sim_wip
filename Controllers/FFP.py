@@ -19,6 +19,12 @@ def isEmpty(buffers):
             return True
     return False
 
+def get_hypothetical_occupancy_as_percent(buffers, num_blocked):
+        occupancies = []
+        for buffer in buffers:
+            occupancies.append((buffers[buffer].get_occupancy() - num_blocked) /  buffers[buffer].size * 100)
+        return np.mean(occupancies)
+
 class FFP(Controller.Controller):
     def __init__(self, name, node):
         super().__init__(name, node, "FFP")
@@ -34,12 +40,6 @@ class FFP(Controller.Controller):
             return ControlResult(0, False)
         return ControlResult(0, True)
     
-
-    def get_hypothetical_occupancy_as_percent(self, buffers):
-        occupancies = []
-        for buffer in buffers:
-            occupancies.append((buffers[buffer].get_occupancy() - self.num_tokens_blocked) /  buffers[buffer].size * 100)
-        return np.mean(occupancies)
     
     def get_control(self):
         return 0

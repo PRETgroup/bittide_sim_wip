@@ -90,13 +90,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 0,
-          "delay": 0.5
+          "delay": 0.4
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n2",
           "dest_buffer_id": 1,
-          "delay": 0.5
+          "delay": 0.4
         }
       ]
     },
@@ -107,13 +107,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n0",
           "dest_buffer_id": 0,
-          "delay": 0.5
+          "delay": 0.4
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n2",
           "dest_buffer_id": 0,
-          "delay": 0.5
+          "delay": 0.4
         }
       ]
     },
@@ -124,13 +124,13 @@
           "source_buffer_id": 0,
           "dest_node_id": "n1",
           "dest_buffer_id": 1,
-          "delay": 0.5
+          "delay": 0.4
         },
         {
           "source_buffer_id": 1,
           "dest_node_id": "n0",
           "dest_buffer_id": 1,
-          "delay": 0.5
+          "delay": 0.4
         }
       ]
     }

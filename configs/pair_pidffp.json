@@ -7,8 +7,8 @@
       [ {
         "name": "PID1",
         "type": "PID",
-        "kp": 0.005,
-        "ki": 0.000001,
+        "kp": 0.05,
+        "ki": 0.00001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,
@@ -33,8 +33,8 @@
       [ {
         "name": "PID1",
         "type": "PID",
-        "kp": 0.005,
-        "ki": 0.000001,
+        "kp": 0.05,
+        "ki": 0.00001,
         "ki_window": 0,
         "kd": 0.0,
         "diff_step": 1,
