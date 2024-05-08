@@ -66,8 +66,15 @@ class Plotter:
             plt.xticks(fontproperties='Times New Roman', size=10)
             plt.yticks(fontproperties='Times New Roman', size=10)
             plt.legend(fontsize=8,loc='lower right',ncol=2, frameon=False, borderpad=0,labelspacing=0)
+
+            plt.subplots_adjust(left=0.1,
+                    bottom=0.15, 
+                    right=0.9, 
+                    top=0.85, 
+                    wspace=0.4, 
+                    hspace=0.8)
         elif self.mode == self.PlotType.Compact:
             #render freq and occ in separate windows
             pass
-
+        
         plt.show()

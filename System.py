@@ -59,20 +59,22 @@ if __name__ == "__main__":
 
     bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%') #progress bar
     delayGenerator = DelayGenerator(
-        jitter_size=0.0,jitter_frequency=0,spike_size=0,spike_width=0.0,spike_period=1,delay_size=0,delay_start=0,delay_end=0) #modelling various delay attacks
+        jitter_size=0.0,jitter_frequency=0,spike_size=0,spike_width=0.0,spike_period=1,delay_size=1,delay_start=500,delay_end=20000) #modelling various delay attacks
     
     ################################################# main simulation loop
     while t <= end_t and not crash:
         # deliver in-flight messages to receiver
         while(len(waiting_messages) > 0 and waiting_messages[0].destTime <= t):
             message = waiting_messages[0]
-            nodes[message.destNode].buffer_receive(message.sourceNode, message.value)
+            if message.destNode in nodes:
+                nodes[message.destNode].buffer_receive(message.sourceNode, message.value)
             waiting_messages.popleft()
 
         # deliver in-flight backpressure messages (FFP only)
         while(len(backpressure_messages) > 0 and backpressure_messages[0].destTime <= t):
             message = backpressure_messages[0]
-            nodes[message.destNode].backpressure_update(message.sourceNode, message.timestamp)
+            if message.destNode in nodes:
+                nodes[message.destNode].backpressure_update(message.sourceNode, message.timestamp)
             backpressure_messages.remove(message)
 
         # run next node tick(s)
