@@ -45,7 +45,7 @@ if __name__ == "__main__":
         graph_step = 1 / (2.0 * fastest_node_freq)
 
     if end_t == -1: #infer a default duration from node frequencies
-        end_t = 40000 / fastest_node_freq
+        end_t = 40000/ fastest_node_freq
         
 
     waiting_messages = deque()
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     bar = IncrementalBar('Running', fill='@', suffix='%(percent)d%%') #progress bar
     delayGenerator = DelayGenerator(
-        jitter_size=0.0,jitter_frequency=0,spike_size=0,spike_width=0.0,spike_period=1,delay_size=1,delay_start=500,delay_end=20000) #modelling various delay attacks
+        jitter_size=0.0,jitter_frequency=0,spike_size=0,spike_width=0.0,spike_period=0,delay_start=500,delay_end=20000, min_base_delay=0.2, max_base_delay=0.5) #modelling various delay attacks
     
     ################################################# main simulation loop
     while t <= end_t and not crash:
@@ -90,17 +90,19 @@ if __name__ == "__main__":
                 for outgoing_link in links[node.name]: #move output messages to outgoing links
                     link = links[node.name][outgoing_link]
                     if out.messages != None:
-                        waiting_messages.append(WaitingMessage(link.sourceNode, link.destNode, t + link.delay + delayGenerator.get_delay(t), out.messages))
+                        waiting_messages.append(WaitingMessage(link.sourceNode, link.destNode, t + link.delay_model.get_delay(t) + delayGenerator.get_delay(t), out.messages))
 
                 for buffer in node.buffers: #transmit a backpressure message on reverse link (FFP)
                     for link in links[node.buffers[buffer].remoteNode]:
                         if links[node.buffers[buffer].remoteNode][link].destNode == node.name:
-                            backpressure_messages.append(BackPressureMessage(node.name,node.buffers[buffer].remoteNode, t + links[node.buffers[buffer].remoteNode][link].delay, node.phase))
+                            backpressure_messages.append(BackPressureMessage(node.name,node.buffers[buffer].remoteNode, t + links[node.buffers[buffer].remoteNode][link].delay_model.get_delay(t), node.phase))
                             break
 
         # graph at a lower resolution than the simulation # 
         if next_graph <= t:
-            plotter.plot(t)
+            #plotter.plot(t)
+            # Pass the current time and the delay generator instance to the plotter
+            plotter.plot(t, delayGenerator)
             next_graph += graph_step
 
         #jump the simulation time to the next simulation event (machine tick or message delivery)
@@ -130,4 +132,3 @@ if __name__ == "__main__":
     print("Average point to point latency: " + str(responsetime_sum / len(nodes)) + " ticks per simulated second")
     plotter.render()
 
-    
