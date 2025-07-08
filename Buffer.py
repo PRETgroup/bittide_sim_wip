@@ -11,7 +11,7 @@ class Buffer:
         self.server = server
         self.localNode = localNode
         self.latency_sum = 0.0
-        self.last_latency = 0
+        self.last_latency = 0.0
         self.remoteNode = remoteNode
         for i in range(initialOcc):
             self.dataq.appendleft(BittideFrame(sender_timestamp=-1,sender_phys_time=-1, signals=[]))
