@@ -77,8 +77,9 @@ class Node:
 
         if self.runtime_interchanger is not None:
             controlResult = self.runtime_interchanger.step(self)
+        #else: controlResult = self.controller.step(self.buffers, steptime)
         else: controlResult = self.controller.step(self.buffers)
-        self.freq += controlResult.freq_correction
+        self.freq = self.initialFreq + controlResult.freq_correction
 
         if controlResult.do_tick:
             #telemetry###
