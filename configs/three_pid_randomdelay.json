@@ -1,0 +1,204 @@
+{
+    "nodes": [
+      {
+        "id": "n0",
+        "controller": {
+          "type": "PID",
+          "kp": 0.15,
+          "ki": 0.00003,
+          "ki_window": 0,
+          "kd": 0.0,
+          "diff_step": 1,
+          "offset": 0.0
+        },
+        "buffers": [
+          {
+            "dst_label": "n1",
+            "capacity": 1000,
+            "initial_occ": 500
+          },
+          {
+            "dst_label": "n2",
+            "capacity": 1000,
+            "initial_occ": 500
+          }
+        ],
+        "frequency": 200.0,
+        "meta_x": 166,
+        "meta_y": 175
+      },
+      {
+        "id": "n1",
+        "controller": {
+          "type": "PID",
+          "kp": 0.15,
+          "ki": 0.00003,
+          "ki_window": 0,
+          "kd": 0.0,
+          "diff_step": 1,
+          "offset": 0.0
+        },
+        "buffers": [
+          {
+            "dst_label": "n0",
+            "capacity": 1000,
+            "initial_occ": 500
+          },
+          {
+            "dst_label": "n2",
+            "capacity": 1000,
+            "initial_occ": 500
+          }
+        ],
+        "frequency": 185.0,
+        "meta_x": 288,
+        "meta_y": 387
+      },
+      {
+        "id": "n2",
+        "controller": {
+          "type": "PID",
+          "kp": 0.15,
+          "ki": 0.00003,
+          "ki_window": 0,
+          "kd": 0.0,
+          "diff_step": 1,
+          "offset": 0.0
+        },
+        "buffers": [
+          {
+            "dst_label": "n1",
+            "capacity": 1000,
+            "initial_occ": 500
+          },
+          {
+            "dst_label": "n0",
+            "capacity": 1000,
+            "initial_occ": 500
+          }
+        ],
+        "frequency": 170.0,
+        "meta_x": 427,
+        "meta_y": 173
+      }
+    ],
+    "links": [
+      {
+        "source_id": "n0",
+        "destinations": [
+          {
+            "source_buffer_id": 0,
+            "dest_node_id": "n1",
+            "dest_buffer_id": 0,
+            
+            "delay_params": {
+              "jitter_size": 0.0,
+              "jitter_frequency": 0.1,
+              "spike_size": 0.0,
+              "spike_width": 0.01,
+              "spike_period": 1,
+              "min_base_delay": 0.4,  
+              "max_base_delay": 0.6,  
+              "delay_start": 0,
+              "delay_end": 1.0e9
+            }
+          },
+          {
+            "source_buffer_id": 1,
+            "dest_node_id": "n2",
+            "dest_buffer_id": 1,
+           
+            "delay_params": {
+              "jitter_size": 0.0,
+              "jitter_frequency": 0.1,
+              "spike_size": 0.0,
+              "spike_width": 0.01,
+              "spike_period": 1,
+              "min_base_delay": 0.8,  
+              "max_base_delay": 1.2,  
+              "delay_start": 0,
+              "delay_end": 1.0e9
+            }
+          }
+        ]
+      },
+      {
+        "source_id": "n1",
+        "destinations": [
+          {
+            "source_buffer_id": 0,
+            "dest_node_id": "n0",
+            "dest_buffer_id": 0,
+        
+            "delay_params": {
+              "jitter_size": 0.0,
+              "jitter_frequency": 0.1,
+              "spike_size": 0.0,
+              "spike_width": 0.01,
+              "spike_period": 1,
+              "min_base_delay": 0.8,
+              "max_base_delay": 1.2,
+              "delay_start": 0,
+              "delay_end": 1.0e9
+            }
+          },
+          {
+            "source_buffer_id": 1,
+            "dest_node_id": "n2",
+            "dest_buffer_id": 0,
+         
+            "delay_params": {
+              "jitter_size": 0.0,
+              "jitter_frequency": 0.1,
+              "spike_size": 0.0,
+              "spike_width": 0.01,
+              "spike_period": 1,
+              "min_base_delay": 0.8,
+              "max_base_delay": 1.2,
+              "delay_start": 0,
+              "delay_end": 1.0e9
+            }
+          }
+        ]
+      },
+      {
+        "source_id": "n2",
+        "destinations": [
+          {
+            "source_buffer_id": 0,
+            "dest_node_id": "n1",
+            "dest_buffer_id": 1,
+           
+            "delay_params": {
+              "jitter_size": 0.0,
+              "jitter_frequency": 0.1,
+              "spike_size": 0.0,
+              "spike_width": 0.01,
+              "spike_period": 1,
+              "min_base_delay": 0.8,
+              "max_base_delay": 1.2,
+              "delay_start": 0,
+              "delay_end": 1.0e9
+            }
+          },
+          {
+            "source_buffer_id": 1,
+            "dest_node_id": "n0",
+            "dest_buffer_id": 1,
+            
+            "delay_params": {
+              "jitter_size": 0.0,
+              "jitter_frequency": 0.1,
+              "spike_size": 0.0,
+              "spike_width": 0.01,
+              "spike_period": 1,
+              "min_base_delay": 0.8,
+              "max_base_delay": 1.2,
+              "delay_start": 0,
+              "delay_end": 1.0e9
+            }
+          }
+        ]
+      }
+    ]
+  }

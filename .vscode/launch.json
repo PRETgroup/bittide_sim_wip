@@ -1,0 +1,47 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug PID Controller",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/System.py",
+            "args": [
+                "--conf", "configs/three_pid.json",
+                "--duration", "10.0"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "stopOnEntry": false,
+            "justMyCode": false
+        },
+        {
+            "name": "Debug FuzzyP Controller",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/System.py",
+            "args": [
+                "--conf", "configs/three_fuzzy.json",
+                "--duration", "10.0"
+            ],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "stopOnEntry": false,
+            "justMyCode": false
+        },
+        {
+            "name": "Debug Config Parsing",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/debug_config.py",
+            "args": ["configs/three_pid.json"],
+            "console": "integratedTerminal",
+            "cwd": "${workspaceFolder}",
+            "env": {},
+            "stopOnEntry": true,
+            "justMyCode": false
+        }
+    ]
+}
