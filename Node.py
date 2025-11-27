@@ -13,7 +13,7 @@ def getSendMessage(timestamp, output_signals, sender_phys_time) -> BittideFrame:
     return newSendFrame
 
 class Node:
-    def __init__(self, name, buffers, initialFreq, server, outgoing_links):
+    def __init__(self, name, buffers, initialFreq, server, outgoing_links, maxFreq = float("inf")):
         self.name = name
         self.controller = None
         self.runtime_interchanger = None
@@ -22,6 +22,7 @@ class Node:
         self.initialFreq = initialFreq
         self.freq = initialFreq
         self.phase = 0
+        self.maxFreq = maxFreq
 
         # data collection
         self.last_step_time = 0
@@ -79,6 +80,9 @@ class Node:
             controlResult = self.runtime_interchanger.step(self)
         else: controlResult = self.controller.step(self.buffers)
         self.freq += controlResult.freq_correction
+
+        if self.freq > self.maxFreq:
+            self.freq = self.maxFreq
 
         if controlResult.do_tick:
             #telemetry###

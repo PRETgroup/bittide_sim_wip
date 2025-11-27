@@ -90,6 +90,8 @@ def load_nodes_from_config(path, serv):
                                                                                                 int(remote_max_occ),
                                                                                                 float(destination["delay"]))
             nodes[nj["id"]] = Node(nj["id"], all_buffs, float(nj["frequency"]), server=serv, outgoing_links=links[nj["id"]])
+            if "max_frequency" in nj:
+                nodes[nj["id"]].maxFreq = float(nj["max_frequency"])
             
             #check if this is a controller config, or a runtime interchange config:
             
