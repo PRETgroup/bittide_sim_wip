@@ -67,7 +67,10 @@ if __name__ == "__main__":
         while(len(waiting_messages) > 0 and waiting_messages[0].destTime <= t):
             message = waiting_messages[0]
             if message.destNode in nodes:
-                nodes[message.destNode].buffer_receive(message.sourceNode, message.value)
+                if not nodes[message.destNode].buffer_receive(message.sourceNode, message.value):
+                    print("Buffer overflow for " + message.sourceNode + "->" + message.destNode)
+                    crash = True
+                    break
             waiting_messages.popleft()
 
         # deliver in-flight backpressure messages (FFP only)

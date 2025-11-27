@@ -22,7 +22,10 @@ class Buffer:
     def receive(self, frame : BittideFrame):
         self.live = True
         if self.running:
+            if len(self.dataq) == self.dataq.maxlen:
+                return False
             self.dataq.appendleft(frame)
+        return True
     
     def pop(self) -> BittideFrame:
         if self.running:

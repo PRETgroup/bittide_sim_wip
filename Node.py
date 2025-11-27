@@ -61,7 +61,7 @@ class Node:
                 self.node_enabled = True
                 for buffer in self.buffers:
                     self.buffers[buffer].running = True
-            self.buffers[index].receive(value)
+            return self.buffers[index].receive(value)
         except:
             print("No inbound buffer with index " + str(index) + " at node " + self.name)
 
