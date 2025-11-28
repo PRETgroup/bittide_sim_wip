@@ -87,6 +87,8 @@ class Node:
 
         if self.freq > self.maxFreq:
             self.freq = self.maxFreq
+        if (self.freq < 0.01):
+            self.freq = 0.01 #cap negative frequencies to prevent negative time deltas
 
         while len(self.execute_times) > 0 and self.execute_times[0] <= (steptime - self.average_window):
             self.execute_times.popleft()
@@ -100,7 +102,6 @@ class Node:
             #############
             if self.node_enabled:
                 self.phase += 1
-            if (self.freq < 0.01): self.freq = 0.01 #cap negative frequencies to prevent negative time deltas
             
             all_inputs_to_fsm = []
             #first during a tick, we provide the local (networked) machine with some inputs from the head of our buffer
