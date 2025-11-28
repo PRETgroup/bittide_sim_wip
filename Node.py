@@ -1,6 +1,7 @@
 import numpy as np
 from Buffer import Buffer
 from BittideFrame import BittideFrame
+from collections import deque
 
 class Output:
     def __init__(self, nextStep, phase, messages):
@@ -18,6 +19,8 @@ class Node:
         self.controller = None
         self.runtime_interchanger = None
 
+        self.average_window = 1.0
+
         self.server = server
         self.initialFreq = initialFreq
         self.freq = initialFreq
@@ -29,6 +32,7 @@ class Node:
         self.last_jitter = 0
         self.last_period = 0
         self.lastWasSkip = False
+        self.execute_times = deque()
         #
 
         
@@ -84,6 +88,9 @@ class Node:
         if self.freq > self.maxFreq:
             self.freq = self.maxFreq
 
+        while len(self.execute_times) > 0 and self.execute_times[0] <= (steptime - self.average_window):
+            self.execute_times.popleft()
+
         if controlResult.do_tick:
             #telemetry###
             recent_period = steptime - self.last_step_time
@@ -117,6 +124,7 @@ class Node:
 
             sent_frame = getSendMessage(self.phase, outputs_from_fsm, steptime)
             self.lastWasSkip = False
+            self.execute_times.append(steptime)
             return Output(1 / self.freq, self.phase, sent_frame)
         else:
             self.lastWasSkip = True 
@@ -126,6 +134,18 @@ class Node:
         if self.lastWasSkip:
             return 0
         return self.freq
+    
+    def get_average_frequency(self):
+        if len(self.execute_times) == 0:
+            return 0
+        
+        return len(self.execute_times) / self.average_window
+
+    def get_average_frequency_with_skip(self):
+        if self.lastWasSkip:
+            return 0
+        return self.get_average_frequency()
+        
     
     def get_logical_delays(self):
         delays = []
