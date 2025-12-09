@@ -50,7 +50,8 @@ class Plotter:
             step_frequencies.append(node.get_frequency())
             step_average_frequencies.append(node.get_average_frequency())
             step_average_frequencies_skipped.append(node.get_average_frequency_with_skip())
-            step_control_outputs.append(node.controller.get_control())
+            if node.controller != None:
+                step_control_outputs.append(node.controller.get_control())
             step_occupancies.extend(node.get_occupancies_as_percent())
             step_node_occupancies.append(node.get_average_occupancy_as_percent())
             step_delays.extend(node.get_logical_delays())
